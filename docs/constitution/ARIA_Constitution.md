@@ -47,8 +47,12 @@ Defines who or what is involved and where an interaction belongs. Identity and d
 ### Authority & Governance
 Defines authorization, policy, delegation, roles, autonomy, approval, separation of duties, emergency authority, and governance precedence.
 
+Authority is non-transitive unless explicitly delegated and governed. Authorization is purpose-bound; permission for one purpose does not imply permission for another.
+
 ### Knowledge Governance
 Controls information ownership, provenance, sensitivity, freshness, confidence, validity, retention, sharing, invalidation, forgetting, and learning boundaries.
+
+Authorized access to individual facts does not automatically authorize aggregate inference from those facts. Derived knowledge remains subject to appropriate governance inherited from its sources.
 
 ### Context & Reasoning Coordination
 Assembles the minimum necessary authorized context and coordinates reasoning resources. Reasoning may propose conclusions or actions but cannot create authority.
@@ -58,6 +62,8 @@ Controls modules, agents, tools, execution plans, execution authorization, valid
 
 ### Accountability & Assurance
 Preserves sufficient evidence to explain significant events, monitor behavior, investigate anomalies, reconstruct history, and maintain governance integrity.
+
+Required accountability must be available at a level appropriate to the operational risk.
 
 ## 6. Knowledge and Authority Planes
 
