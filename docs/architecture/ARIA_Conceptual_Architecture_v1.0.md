@@ -58,6 +58,8 @@ Includes authorization, policy, delegation, roles, autonomy, approval, separatio
 
 This is the **Authority Plane**.
 
+Authority is non-transitive unless explicitly delegated and governed. Authorization is purpose-bound: permission for one purpose does not imply permission for another.
+
 ### 3.3 Knowledge Governance
 
 Answers: **What information may exist, where did it come from, how trustworthy is it, and who may use it?**
@@ -66,11 +68,15 @@ Includes knowledge, memory, provenance, ownership, sensitivity, freshness, confi
 
 This is the **Knowledge Plane**.
 
+Authorized access to individual information does not automatically authorize aggregate inference from that information. Derived knowledge remains subject to appropriate governance inherited from its sources.
+
 ### 3.4 Context & Reasoning Coordination
 
 Answers: **Given what is authorized and known, what information should be used to solve the problem?**
 
 Context is selected deliberately and must be minimum necessary. Reasoning coordinates providers and models but cannot grant access or create authority.
+
+Context assembly must preserve applicable domain, purpose, sensitivity, provenance, and authorization constraints rather than treating individually accessible facts as unrestricted raw material for inference.
 
 ### 3.5 Capability & Execution Governance
 
@@ -94,6 +100,8 @@ Answers: **Can we determine what happened, why, and whether Aria behaved correct
 
 Includes audit, accountability, observability, governance explanations, security events, anomaly detection, change tracking, historical reconstruction, and integrity monitoring.
 
+Required accountability must be available at a level appropriate to operational risk. If required evidence cannot be established for a consequential operation, Aria must not silently treat that operation as normally governed; it must apply appropriate safeguards, degrade, restrict, or fail closed according to risk.
+
 ## 4. Information and Authority Are Separate
 
 Information may inform reasoning without granting permission.
@@ -101,6 +109,10 @@ Information may inform reasoning without granting permission.
 A user request, document, memory, model output, tool capability, provider, or agent cannot redefine authorization or governance merely by being present in context.
 
 Cross-domain information movement must be explicit and governed.
+
+Authorization is also purpose-bound. Permission to use information or perform an action for one legitimate purpose does not automatically authorize a different purpose.
+
+Aggregate inference is governed as well as direct access. A collection of individually authorized facts must not be treated as automatically authorized for sensitive or consequential derived conclusions.
 
 ## 5. Trust Model
 
@@ -237,6 +249,8 @@ Conceptual degraded modes:
 5. Recovery
 
 If authorization or governance cannot be established, consequential operations fail closed. Provider outages should reduce capability rather than weaken security. External failures preserve uncertainty rather than fabricate success.
+
+If required accountability evidence cannot be established at the level appropriate to operational risk, the operation must not silently proceed as normally governed.
 
 Recovery follows:
 
