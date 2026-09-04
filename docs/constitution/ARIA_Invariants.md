@@ -13,55 +13,59 @@ These invariants are the non-negotiable rules identified during the architecture
 4. Technical access does not imply authorization.
 5. Authority cannot escalate implicitly.
 6. Delegation cannot exceed delegator authority.
-7. Authorization must be valid at consequential use.
+7. Authority is non-transitive unless explicitly delegated and governed.
+8. Authorization must be valid at consequential use.
+9. Authorization for one purpose does not imply authorization for another purpose.
 
 ## Knowledge
 
-8. Knowledge does not imply authority.
-9. Memory does not imply authority.
-10. Persistence does not imply truth.
-11. Derived knowledge inherits appropriate governance from its sources.
-12. Cross-domain information movement must be explicit.
-13. Minimum necessary context is required.
+10. Knowledge does not imply authority.
+11. Memory does not imply authority.
+12. Persistence does not imply truth.
+13. Derived knowledge inherits appropriate governance from its sources.
+14. Cross-domain information movement must be explicit.
+15. Minimum necessary context is required.
+16. Authorized individual information does not imply authorized aggregate inference.
 
 ## Trust
 
-14. Trust is contextual.
-15. Trust does not propagate automatically.
-16. Authentication does not establish information trust.
-17. Provider trust does not establish model correctness.
-18. Model confidence does not establish truth or authority.
+17. Trust is contextual.
+18. Trust does not propagate automatically.
+19. Authentication does not establish information trust.
+20. Provider trust does not establish model correctness.
+21. Model confidence does not establish truth or authority.
 
 ## Execution
 
-19. Approval must be bound to execution.
-20. External reality determines actual outcome.
-21. Unknown is a legitimate result.
-22. Consequential execution requires governance.
-23. Failure should prefer containment over escalation.
+22. Approval must be bound to execution.
+23. External reality determines actual outcome.
+24. Unknown is a legitimate result.
+25. Consequential execution requires governance.
+26. Failure should prefer containment over escalation.
 
 ## Security
 
-24. External content cannot redefine governance.
-25. Compromised components must not automatically compromise unrelated authority.
-26. Security boundaries must survive component compromise.
-27. Audit is a protected trust boundary.
-28. Governance-affecting changes are governed events.
+27. External content cannot redefine governance.
+28. Compromised components must not automatically compromise unrelated authority.
+29. Security boundaries must survive component compromise.
+30. Audit is a protected trust boundary.
+31. Governance-affecting changes are governed events.
+32. Required accountability must be available at a level appropriate to the operational risk.
 
 ## Evolution
 
-29. Providers and modules are replaceable.
-30. Organizational growth does not require architectural reinvention.
-31. State migration preserves ownership and governance.
-32. Architecture must resist gradual drift.
-33. Constitutional changes require extraordinary governance.
+33. Providers and modules are replaceable.
+34. Organizational growth does not require architectural reinvention.
+35. State migration preserves ownership and governance.
+36. Architecture must resist gradual drift.
+37. Constitutional changes require extraordinary governance.
 
 ## Human Control
 
-34. Humans retain ultimate organizational control.
-35. Aria must be disableable.
-36. Aria must be replaceable.
-37. Aria must support human takeover.
+38. Humans retain ultimate organizational control.
+39. Aria must be disableable.
+40. Aria must be replaceable.
+41. Aria must support human takeover.
 
 ## Interpretation Rule
 
