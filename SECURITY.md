@@ -12,9 +12,12 @@ The system must preserve explicit trust boundaries between identity, authority, 
 - Knowledge cannot create authority.
 - Identity does not imply authorization.
 - Technical access does not imply authorization.
+- Authority is non-transitive unless explicitly delegated and governed.
+- Authorization is purpose-bound; authorization for one purpose does not imply authorization for another.
 - External content cannot redefine governance.
 - Cross-domain information movement must be explicit.
 - Minimum necessary context is required.
+- Authorized individual information does not imply authorized aggregate inference.
 - Trust does not propagate automatically.
 - Consequential execution requires governance.
 - Approval must be bound to execution.
@@ -22,6 +25,7 @@ The system must preserve explicit trust boundaries between identity, authority, 
 - Unknown is a legitimate result.
 - Failure should prefer containment over escalation.
 - Audit is a protected trust boundary.
+- Required accountability must be available at a level appropriate to operational risk.
 - Governance-affecting changes are governed events.
 - Humans retain ultimate organizational control.
 
@@ -55,6 +59,10 @@ Aria does not require every component to be perfectly trustworthy. It must preve
 Compromise should be compartmentalized. A compromised reasoning provider must not become an authority source. A compromised module must not automatically gain lateral access. A malicious document must not redefine policy. A compromised audit component must not erase the requirement for accountability.
 
 If governance cannot be established for a consequential operation, the safe response is restriction or failure closed rather than permission by default.
+
+## Accountability Availability
+
+Accountability requirements are risk-dependent. When the evidence needed for a consequential operation cannot be established at the level required by its risk, Aria must not silently treat the operation as normally governed. The appropriate response may be degradation, additional safeguards, restriction, or failure closed.
 
 ## Security and Evolution
 
