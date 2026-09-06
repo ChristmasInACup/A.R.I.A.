@@ -38,13 +38,21 @@ INVARIANTS
     ↓
 CONCEPTUAL ARCHITECTURE
     ↓
-ARCHITECTURE SPECIFICATIONS
-    ↓
 IMPLEMENTATION ARCHITECTURE
     ↓
-CODE
+ARCHITECTURE SPECIFICATIONS
+    ↓
+CAPABILITIES
+    ↓
+EPICS
+    ↓
+STORIES
+    ↓
+IMPLEMENTATION
     ↓
 TESTS
+    ↓
+EVIDENCE
 ```
 
 Architecture decisions and security constraints apply across these layers.
@@ -113,6 +121,8 @@ Specification
 Acceptance Criteria
     ↓
 Tests
+    ↓
+Evidence
 ```
 
 This traceability is a defense against architectural drift and knowledge debt. A requirement without a clear architectural origin should be treated as a candidate decision or open question rather than silently becoming implementation behavior.
