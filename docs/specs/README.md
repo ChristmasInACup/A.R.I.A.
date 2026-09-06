@@ -5,6 +5,12 @@
 **Approval:** Pending explicit review and approval  
 **Last updated:** 2026-09-06
 
+## Governance Artifacts
+
+- [Specification Governance](../governance/Specification_Governance.md) — ownership, review, lifecycle, and approval state for all 18 specifications.
+- [Architecture Traceability Matrix](../governance/Architecture_Traceability_Matrix.md) — maps all 41 invariants to normative specifications and future verification evidence.
+- [Specification Consistency Review](../governance/Specification_Consistency_Review.md) — cross-document consistency assessment for the baseline.
+
 ## Purpose
 
 Architecture specifications translate A.R.I.A.'s approved conceptual and implementation architecture into precise, testable behavioral and boundary requirements.
@@ -45,7 +51,7 @@ A specification is authoritative only within its defined scope and remains subor
 
 ## Specification Set
 
-The foundational decomposition contains **18 draft specifications** organized by stable responsibility and ownership boundaries.
+The foundational decomposition contains **18 draft specifications** organized by stable responsibility and ownership boundaries. Governance state for each specification is recorded centrally in [Specification Governance](../governance/Specification_Governance.md).
 
 ```text
 docs/specs/
@@ -191,6 +197,28 @@ Each specification should use this structure unless an approved ADR establishes 
 20. **Test Obligations**
 21. **Open Questions / ADRs**
 
+## Common Failure and Uncertainty Semantics
+
+The specification set uses a shared vocabulary so that failure in one boundary cannot silently become authority in another:
+
+- **Success** — required conditions and outcome evidence establish successful completion.
+- **Denied** — action is not authorized or governance rejects it.
+- **Unavailable** — a required capability or dependency cannot currently be used.
+- **Invalid** — required validation fails.
+- **Expired** — a previously valid authority, approval, evidence, or state is no longer temporally valid.
+- **Revoked** — previously granted authority, approval, trust, or configuration has been withdrawn.
+- **Conflicting** — relevant sources disagree in a material way.
+- **Partial** — only part of the intended operation or outcome is established.
+- **Unknown** — the system cannot legitimately establish what occurred or what is true.
+- **Restricted** — capability is intentionally reduced by governance or trust conditions.
+- **Contained** — a component or capability is isolated to limit impact.
+- **Degraded** — operation continues with reduced capability under explicit governance.
+- **Locked Down** — consequential operation is halted pending trusted recovery or governance restoration.
+- **Human Takeover** — human control supersedes autonomous operation.
+- **Recovery** — a governed process for re-establishing trusted state and appropriate capability.
+
+> **Failure reduces capability; it never increases authority.**
+
 ## Specification Requirements
 
 Specifications must be:
@@ -247,7 +275,7 @@ Tests
 Evidence
 ```
 
-A requirement without a clear architectural origin should be treated as a candidate decision or open question rather than silently becoming implementation behavior.
+The [Architecture Traceability Matrix](../governance/Architecture_Traceability_Matrix.md) provides the baseline invariant-level mapping. It explicitly distinguishes future test/evidence obligations from existing implementation evidence.
 
 ## Lifecycle
 
@@ -272,9 +300,10 @@ The specification phase is ready to feed project planning when:
 - all architectural invariants have clear specification coverage;
 - unresolved questions are identified and assigned to ADRs where appropriate;
 - no specification silently changes higher-level architecture;
-- cross-specification ownership and boundaries have been reviewed.
+- cross-specification ownership and boundaries have been reviewed;
+- the specification governance registry and consistency review are complete.
 
-**Current state:** Draft specifications exist. Approval and cross-document consistency review remain before epics and stories are authorized to begin.
+**Current state:** Draft specifications exist. Governance artifacts and cross-document consistency review are complete; explicit approval remains before epics and stories are authorized to begin.
 
 ## Relationship to Implementation
 
