@@ -12,12 +12,29 @@ Specifications are the bridge between architectural intent and implementation. T
 
 **FOUNDATIONAL — DRAFT STRUCTURE**
 
-The specification structure is established. Individual specifications will be developed from the implementation architecture before epics, stories, or Codex implementation begin.
+The specification structure is established. Individual specifications are **PLANNED** and will be developed from the approved implementation architecture before epics, stories, or Codex implementation begin.
+
+The files listed below are the intended specification set; they are not claims that those files already exist. A planned specification may be marked `TBD`, `Draft`, `Under Review`, or `Approved` as it moves through its lifecycle.
+
+## Baseline Governance
+
+| Field | Status |
+|---|---|
+| Baseline status | Draft structure |
+| Owner | A.R.I.A. project owner / maintainer |
+| Approval state | Pending explicit review and approval |
+| Last updated | 2026-09-06 |
+
+This document does not constitute approval by itself. The specification baseline becomes authoritative only through the project's normal review and approval process. The approving review should confirm that the specification structure is complete enough to proceed, that known architectural constraints are represented, and that unresolved questions are explicitly identified.
+
+Any future approved baseline should record its approval through the repository's governed change process rather than by silently changing this status.
 
 ## Architectural Position
 
 ```text
 CONSTITUTION
+    ↓
+INVARIANTS
     ↓
 CONCEPTUAL ARCHITECTURE
     ↓
@@ -36,40 +53,42 @@ A specification is authoritative within its defined scope, but it is subordinate
 
 ## Specification Domains
 
+The following files are the **planned specification set**. They will be added in subsequent specification work and are intentionally not required to exist in this baseline PR.
+
 ```text
 docs/specs/
 ├── core/
-│   ├── identity-domain.md
-│   ├── authority-governance.md
-│   ├── knowledge-governance.md
-│   ├── context-reasoning.md
-│   ├── capability-execution.md
-│   └── accountability.md
+│   ├── identity-domain.md                    # PLANNED
+│   ├── authority-governance.md               # PLANNED
+│   ├── knowledge-governance.md               # PLANNED
+│   ├── context-reasoning.md                 # PLANNED
+│   ├── capability-execution.md               # PLANNED
+│   └── accountability.md                     # PLANNED
 │
 ├── governance/
-│   ├── authorization.md
-│   ├── delegation.md
-│   ├── approval-autonomy.md
-│   └── organizational-profiles.md
+│   ├── authorization.md                     # PLANNED
+│   ├── delegation.md                        # PLANNED
+│   ├── approval-autonomy.md                 # PLANNED
+│   └── organizational-profiles.md            # PLANNED
 │
 ├── knowledge/
-│   ├── knowledge-lifecycle.md
-│   ├── memory.md
-│   └── provenance.md
+│   ├── knowledge-lifecycle.md               # PLANNED
+│   ├── memory.md                            # PLANNED
+│   └── provenance.md                        # PLANNED
 │
 ├── reasoning/
-│   ├── reasoning-coordination.md
-│   ├── provider-governance.md
-│   └── model-selection.md
+│   ├── reasoning-coordination.md            # PLANNED
+│   ├── provider-governance.md               # PLANNED
+│   └── model-selection.md                   # PLANNED
 │
 ├── execution/
-│   ├── capability-contracts.md
-│   ├── execution-governance.md
-│   └── external-outcomes.md
+│   ├── capability-contracts.md              # PLANNED
+│   ├── execution-governance.md              # PLANNED
+│   └── external-outcomes.md                 # PLANNED
 │
 └── audit/
-    ├── accountability.md
-    └── observability.md
+    ├── accountability.md                    # PLANNED
+    └── observability.md                     # PLANNED
 ```
 
 The directory structure is intentionally organized by responsibility rather than by implementation technology or anticipated code organization.
