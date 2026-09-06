@@ -17,11 +17,13 @@ Implementation follows this hierarchy:
 ```text
 Constitution
     ↓
+Invariants
+    ↓
 Conceptual Architecture
     ↓
-Implementation Architecture
+Architecture Specifications
     ↓
-Specifications
+Capabilities
     ↓
 Epics
     ↓
@@ -29,8 +31,26 @@ Stories
     ↓
 Tasks
     ↓
-Code + Tests
+Implementation
+    ↓
+Tests
+    ↓
+Evidence
 ```
+
+Each layer answers a different question:
+
+- **Constitution:** What must never be violated?
+- **Invariants:** What truths must always hold?
+- **Conceptual Architecture:** How must the system fundamentally be organized?
+- **Architecture Specifications:** What guarantees must each architectural boundary provide?
+- **Capabilities:** What ability are we creating?
+- **Epics:** What major body of work creates that capability?
+- **Stories:** What bounded behavior are we implementing?
+- **Tasks:** What concrete engineering work is required?
+- **Implementation:** How is the behavior built?
+- **Tests:** Does it behave correctly?
+- **Evidence:** Can we demonstrate that the architectural guarantees remain satisfied?
 
 Code is evidence of the architecture, not the authority that defines it.
 
@@ -155,6 +175,32 @@ Optimize when evidence demonstrates a meaningful requirement.
 
 Performance must not be used as a justification for weakening authorization, provenance, accountability, isolation, or correctness.
 
+### 5.12 Intent-First Human Interaction
+
+A.R.I.A. should minimize the cognitive burden required to accomplish legitimate tasks.
+
+Users should communicate goals and intent rather than having to understand or manually coordinate A.R.I.A.'s internal architecture, governance mechanisms, tools, models, memory systems, or execution pathways.
+
+A.R.I.A. should be **intent-first, not mechanism-first**. The system should absorb operational, technical, and orchestration complexity wherever doing so is safe and consistent with established authority and user intent.
+
+A.R.I.A. should:
+
+- Prefer natural goals over procedural commands.
+- Infer reasonable defaults when safe.
+- Ask questions only when the answer materially affects outcome, authority, safety, or user intent.
+- Ask the smallest useful clarification question when clarification is necessary.
+- Avoid exposing internal complexity unless it is relevant to the user's decision or understanding.
+- Explain consequential approvals in terms of the meaningful action and its consequences rather than internal implementation machinery.
+- Preserve a clear path for inspection, correction, override, and human takeover.
+
+Cognitive simplicity must never become concealment. A.R.I.A. must not hide material consequences, uncertainty, authorization requirements, conflicts, or meaningful opportunities for human control merely to make an interaction appear simpler.
+
+A useful design test is:
+
+> **Are we making the user operate A.R.I.A., or is A.R.I.A. operating for the user?**
+
+If accomplishing a legitimate goal requires the user to understand or manually coordinate A.R.I.A.'s internal mechanisms, that should be treated as a potential architectural and interface smell.
+
 ## 6. Documentation and Code Comments
 
 Documentation should preserve knowledge that would otherwise be lost from the codebase.
@@ -207,14 +253,25 @@ If an agent discovers that a story, specification, or implementation conflicts w
 
 The agent must not resolve the conflict by silently changing the architecture.
 
-## 8. Story-Driven Development
+## 8. Capability and Epic-Driven Planning
 
-Implementation work should be expressed as bounded stories before significant coding begins.
+Significant implementation work should first be organized around an explicitly defined capability and its associated epics.
+
+A capability should describe a coherent ability A.R.I.A. must provide without prematurely prescribing implementation details.
+
+An epic should represent a meaningful body of work required to establish, extend, or harden that capability.
+
+Epics should remain traceable to the relevant specifications and invariants. They should not introduce architectural authority that does not already exist in the approved architecture or specifications.
+
+## 9. Story-Based Implementation
+
+Stories are the primary bounded unit of implementation work, but they are not the primary unit of architecture.
 
 A story should identify:
 
 - objective
 - architectural references
+- capability and epic
 - scope
 - preconditions
 - expected behavior
@@ -228,18 +285,24 @@ A story should identify:
 
 Stories should be small enough for a reviewer to understand the complete change.
 
-## 9. Development Workflow
+Stories implement already-established architectural intent; they must not be used to invent architecture through incremental feature work.
+
+## 10. Development Workflow
 
 The preferred workflow is:
 
 ```text
 Issue / Need
     ↓
-Design
+Architectural / Product Design
     ↓
 ADR if durable architectural decision
     ↓
 Specification
+    ↓
+Capability
+    ↓
+Epic
     ↓
 Story
     ↓
@@ -248,6 +311,8 @@ Implementation
 Tests
     ↓
 Security / Architecture Review
+    ↓
+Evidence
     ↓
 Pull Request
     ↓
@@ -258,46 +323,59 @@ Merge
 
 AI agents may accelerate the workflow, but they do not remove the governance steps.
 
-## 10. Pull Request Expectations
+## 11. Pull Request Expectations
 
 A pull request should make it possible to determine:
 
 - what changed
 - why it changed
-- which story authorized the work
+- which capability, epic, and story authorized the work
 - which architectural elements are affected
 - which invariants are relevant
 - what security implications exist
 - what tests demonstrate correctness
+- what evidence supports the relevant guarantees
 - what remains intentionally out of scope
 
 Prefer small, reviewable pull requests over large batches of unrelated work.
 
-## 11. Architectural Traceability
+## 12. Architectural Traceability
 
-Important implementation work should be traceable from architecture to executable evidence:
+Important implementation work should be traceable from foundational principles to executable evidence:
 
 ```text
+Constitution
+   ↓
 Invariant
    ↓
 Architecture
    ↓
 Specification
    ↓
+Capability
+   ↓
+Epic
+   ↓
 Story
    ↓
 Implementation
    ↓
 Test
+   ↓
+Evidence
 ```
 
-The purpose is not bureaucracy. The purpose is to prevent architectural intent from disappearing as the codebase grows.
+The purpose is not bureaucracy. The purpose is to prevent architectural intent from disappearing as the codebase grows and to make important guarantees demonstrable.
 
-## 12. Invariant Testing
+## 13. Layered Testing and Evidence
 
-Where practical, constitutional and architectural invariants should be represented by automated tests.
+Testing should operate at multiple levels because different layers answer different questions.
 
-Examples include:
+### Invariant Tests
+
+Verify that foundational truths cannot be violated.
+
+Examples:
 
 - reasoning cannot create authority
 - capability cannot create authority
@@ -305,14 +383,20 @@ Examples include:
 - cross-domain access requires authorization
 - memory cannot grant authority
 - providers cannot modify policy
-- approval is bound to execution
-- unauthorized execution is rejected
-- unknown execution outcomes remain unknown
-- compromised components cannot implicitly gain unrelated authority
 
-Tests should verify both permitted and forbidden behavior where practical.
+### Specification Tests
 
-## 13. Failure and Degraded Operation
+Verify that an architectural boundary provides its defined guarantees.
+
+Examples include authorization scope, delegation limits, provenance preservation, context minimization, approval binding, and execution-governance behavior.
+
+### Story Tests
+
+Verify that the specific behavior authorized by a story works as intended, including relevant permitted and forbidden cases.
+
+Evidence should make it possible to demonstrate that important architectural guarantees remain satisfied rather than relying only on individual feature tests.
+
+## 14. Failure and Degraded Operation
 
 Implementation must preserve A.R.I.A.'s failure philosophy:
 
@@ -324,7 +408,7 @@ Implementation must preserve A.R.I.A.'s failure philosophy:
 - security compromise should trigger containment rather than capability expansion
 - unavailable governance should fail closed for consequential actions
 
-## 14. Definition of Done
+## 15. Definition of Done
 
 A story is complete only when:
 
@@ -338,10 +422,11 @@ A story is complete only when:
 - [ ] Architectural decisions are captured in an ADR when required.
 - [ ] The implementation remains within story scope.
 - [ ] The code is readable and appropriately modular.
+- [ ] Relevant evidence has been established where architectural guarantees require it.
 - [ ] The pull request clearly explains the change.
 - [ ] Required human review is complete.
 
-## 15. Review Heuristics
+## 16. Review Heuristics
 
 Reviewers should ask:
 
@@ -355,6 +440,8 @@ Reviewers should ask:
 8. Is important behavior testable?
 9. Are failure and unknown states represented honestly?
 10. Did the implementation introduce architectural knowledge that needs documentation?
+11. Does the user experience minimize unnecessary cognitive burden?
+12. Are we making the user operate A.R.I.A., or is A.R.I.A. operating for the user?
 
 A useful component sanity check is:
 
@@ -362,7 +449,7 @@ A useful component sanity check is:
 
 If not, the design should be reconsidered before merge.
 
-## 16. Evolution Rule
+## 17. Evolution Rule
 
 Implementation may evolve continuously while the foundational architecture remains stable.
 
@@ -370,6 +457,6 @@ New technology, providers, modules, organizational requirements, and capabilitie
 
 When implementation pressure conflicts with an invariant, the correct response is architectural review—not silent erosion of the boundary.
 
-## 17. Guiding Principle
+## 18. Guiding Principle
 
-> **Build the smallest thing that proves the architecture, make the code understandable, make unsafe behavior difficult, and preserve the ability to change what we have built.**
+> **Build the smallest thing that proves the architecture, make the code understandable, make unsafe behavior difficult, minimize the cognitive burden on the human, and preserve the ability to change what we have built.**
