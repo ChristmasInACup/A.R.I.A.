@@ -19,6 +19,33 @@ Determine whether the change affects:
 
 If it does, document the design impact before implementation. Create an ADR when the decision has durable architectural consequences.
 
+## Branch and Change Policy
+
+Branch names communicate intent; they do not grant architectural authority.
+
+The repository should use branches according to the kind of change being made:
+
+```text
+main
+  │
+  ├── architecture/<purpose>
+  ├── spec/<purpose>
+  ├── feature/<purpose>
+  ├── fix/<purpose>
+  └── experiment/<purpose>
+```
+
+- `main` — approved project baseline.
+- `architecture/*` — architectural changes requiring explicit architecture review.
+- `spec/*` — specification work within approved architecture.
+- `feature/*` — implementation of approved architecture and specifications.
+- `fix/*` — corrections that do not redefine architecture; architectural changes must be escalated.
+- `experiment/*` — exploration only; experiments do not establish architectural authority.
+
+No branch type, implementation convenience, technical reachability, or passing test may silently create or redefine authority.
+
+When a change crosses its branch's intended responsibility, stop and move the decision to the appropriate higher-level artifact and review process.
+
 ## Development Flow
 
 ```text
@@ -28,9 +55,13 @@ Design
   ↓
 ADR if architectural
   ↓
+Specification / Acceptance Criteria
+  ↓
 Implementation
   ↓
 Tests
+  ↓
+Evidence
   ↓
 Review
   ↓
@@ -41,7 +72,7 @@ Merge
 
 > **Code never gets to redefine the architecture simply because the code was easier to write that way.**
 
-If implementation appears to require violating a constitutional principle or invariant, stop and explicitly revisit the architecture.
+If implementation appears to require violating a constitutional principle, invariant, specification, or architectural boundary, stop and explicitly revisit the higher-level decision.
 
 ## Testing Expectations
 
