@@ -21,6 +21,8 @@ If it does, document the design impact before implementation. Create an ADR when
 
 ## Branch and Change Policy
 
+The detailed repository policy is defined in [Branch and Change Policy](docs/governance/Branch_and_Change_Policy.md).
+
 Branch names communicate intent; they do not grant architectural authority.
 
 The repository should use branches according to the kind of change being made:
