@@ -1,38 +1,73 @@
 # Decision Records
 
-Architecture decisions are recorded here when a decision has durable consequences or prevents future knowledge debt.
+Architecture Decision Records (ADRs) capture durable decisions that would otherwise become lost knowledge or be rediscovered later.
 
-## When to write an ADR
+## Purpose
 
-Create an ADR when changing or establishing:
+Use an ADR when a decision has meaningful architectural, security, authority, governance, trust, execution, or long-term implementation consequences.
 
-- authority boundaries
-- security boundaries
-- domain isolation
-- knowledge ownership or governance
-- execution semantics
-- provider/model governance
-- autonomy or approval rules
-- major architectural interfaces
-- implementation choices with long-term architectural consequences
+An ADR records **why** a decision was made. It does not become a new source of authority and cannot silently override a higher-level artifact.
 
-## Decision hierarchy
+## When to Write an ADR
+
+Create an ADR when establishing or changing:
+
+- authority boundaries;
+- security or trust boundaries;
+- domain isolation;
+- knowledge ownership or governance;
+- execution semantics;
+- provider/model governance;
+- autonomy or approval rules;
+- major architectural interfaces;
+- recovery or containment behavior;
+- implementation choices with durable architectural consequences;
+- migration or state-transition rules that affect governance;
+- other decisions whose rationale should remain discoverable after the original discussion is gone.
+
+If a question changes the Constitution or a foundational invariant, treat it as an extraordinary architectural change rather than an ordinary implementation ADR.
+
+## Documentation Hierarchy
 
 ```text
 Constitution
     ↓
-Conceptual Architecture
+Invariants
     ↓
-Architecture Specs
+Conceptual Architecture
     ↓
 Implementation Architecture
     ↓
-Code
+Architecture Specifications
+    ↓
+Capabilities
+    ↓
+Epics
+    ↓
+Stories
+    ↓
+Implementation
+    ↓
+Tests
+    ↓
+Evidence
 ```
 
-An ADR explains **why** a decision was made. It must not silently override the Constitution or conceptual architecture.
+ADRs record decisions **within or about this hierarchy**. They preserve rationale and consequences; they do not create a parallel hierarchy.
 
-## Suggested ADR format
+## Authority Rules
+
+An ADR:
+
+- must identify the higher-level artifacts it affects;
+- must not silently redefine the Constitution;
+- must not weaken an invariant without the required extraordinary governance;
+- must identify when an associated specification, architecture document, or implementation artifact must change;
+- should preserve the alternatives and reasoning that led to the decision.
+
+If an ADR conflicts with a higher-authority artifact, the conflict must be resolved explicitly before implementation proceeds.
+
+## Suggested ADR Format
 
 ```md
 # ADR-NNNN — Title
@@ -40,6 +75,10 @@ An ADR explains **why** a decision was made. It must not silently override the C
 ## Status
 
 Proposed | Accepted | Superseded | Rejected
+
+## Date
+
+YYYY-MM-DD
 
 ## Context
 
@@ -51,7 +90,7 @@ What are we choosing?
 
 ## Alternatives Considered
 
-What meaningful alternatives were rejected and why?
+What meaningful alternatives were considered and why were they rejected?
 
 ## Consequences
 
@@ -59,11 +98,37 @@ What becomes easier, harder, safer, riskier, or more constrained?
 
 ## Architectural Impact
 
-Which boundaries, invariants, or documents are affected?
+Which boundaries, invariants, specifications, or documents are affected?
 
-## Security Impact
+## Security / Trust Impact
 
-What changes in trust, authority, information flow, or execution risk?
+What changes in authority, trust, information flow, isolation, or execution risk?
+
+## Required Follow-Up
+
+Which specifications, capabilities, implementation documents, tests, or evidence must change?
 ```
 
-The first architectural decisions should preserve the principles already established in the Constitution and conceptual architecture.
+## Decision Lifecycle
+
+```text
+Question / Need
+      ↓
+Context and alternatives
+      ↓
+Decision
+      ↓
+ADR
+      ↓
+Update affected architecture/specification
+      ↓
+Implementation
+      ↓
+Tests / Evidence
+```
+
+An ADR should be created early enough that implementation does not become the de facto decision mechanism.
+
+## Current State
+
+No individual ADRs are required merely to restate the already-approved foundational architecture. The existing Constitution, invariants, conceptual architecture, implementation architecture, and specification framework remain the primary sources of architectural authority.
