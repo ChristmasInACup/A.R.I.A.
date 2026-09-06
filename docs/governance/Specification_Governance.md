@@ -27,28 +27,46 @@ DRAFT → UNDER REVIEW → APPROVED → FROZEN
 
 No implementation work may treat a Draft specification as approved authority merely because the file exists.
 
+## PR #2 Documentation Baseline Decision
+
+PR #2 establishes the repository's **implementation documentation baseline**. That repository-level baseline approval is separate from approval of the individual architecture specifications.
+
+The 18 specifications in this baseline are **intentionally Draft**. They are documented, structurally reviewed, and traceable, but they are **not approved as implementation-authoritative specifications by PR #2**.
+
+Therefore:
+
+- the repository owner is the current architectural authority for this documentation baseline;
+- no independent reviewer is assigned solely for ceremony where none has been explicitly designated;
+- each specification remains intentionally Draft;
+- specification-level approval is **Not Applicable** at this stage;
+- the approval record for each specification identifies PR #2 as the documentation-baseline context, not as specification approval;
+- repository-level approval of PR #2 establishes the authoritative documentation/implementation baseline for the repository, subject to the Constitution, Invariants, and frozen architecture;
+- future implementation work must not treat these Draft specifications as approved normative authority until they undergo the explicit specification approval process.
+
+This distinction prevents repository merge status from being mistaken for approval of every normative artifact contained in the repository.
+
 ## Governance Registry
 
 | ID | Specification | Owner | Reviewer | Status | Approval | Last Updated | Approval Record |
 |---|---|---|---|---|---|---|---|
-| ARIA-SPEC-ID-001 | [Identity & Domain](../specs/identity/identity-domain.md) | Repository Owner (`ChristmasInACup`) | Pending explicit assignment | Draft | Pending | 2026-09-06 | PR #2 |
-| ARIA-SPEC-AUTH-001 | [Authorization & Policy](../specs/authority/authorization-policy.md) | Repository Owner (`ChristmasInACup`) | Pending explicit assignment | Draft | Pending | 2026-09-06 | PR #2 |
-| ARIA-SPEC-AUTH-002 | [Delegation & Authority](../specs/authority/delegation-authority.md) | Repository Owner (`ChristmasInACup`) | Pending explicit assignment | Draft | Pending | 2026-09-06 | PR #2 |
-| ARIA-SPEC-AUTH-003 | [Approval, Autonomy & Human Control](../specs/authority/approval-autonomy-human-control.md) | Repository Owner (`ChristmasInACup`) | Pending explicit assignment | Draft | Pending | 2026-09-06 | PR #2 |
-| ARIA-SPEC-KNOW-001 | [Knowledge Lifecycle](../specs/knowledge/knowledge-lifecycle.md) | Repository Owner (`ChristmasInACup`) | Pending explicit assignment | Draft | Pending | 2026-09-06 | PR #2 |
-| ARIA-SPEC-KNOW-002 | [Memory](../specs/knowledge/memory.md) | Repository Owner (`ChristmasInACup`) | Pending explicit assignment | Draft | Pending | 2026-09-06 | PR #2 |
-| ARIA-SPEC-KNOW-003 | [Provenance & Information Trust](../specs/knowledge/provenance-information-trust.md) | Repository Owner (`ChristmasInACup`) | Pending explicit assignment | Draft | Pending | 2026-09-06 | PR #2 |
-| ARIA-SPEC-REAS-001 | [Context Assembly](../specs/reasoning/context-assembly.md) | Repository Owner (`ChristmasInACup`) | Pending explicit assignment | Draft | Pending | 2026-09-06 | PR #2 |
-| ARIA-SPEC-REAS-002 | [Reasoning Coordination](../specs/reasoning/reasoning-coordination.md) | Repository Owner (`ChristmasInACup`) | Pending explicit assignment | Draft | Pending | 2026-09-06 | PR #2 |
-| ARIA-SPEC-REAS-003 | [Provider & Model Governance](../specs/reasoning/provider-model-governance.md) | Repository Owner (`ChristmasInACup`) | Pending explicit assignment | Draft | Pending | 2026-09-06 | PR #2 |
-| ARIA-SPEC-EXEC-001 | [Decision & Proposal](../specs/execution/decision-proposal.md) | Repository Owner (`ChristmasInACup`) | Pending explicit assignment | Draft | Pending | 2026-09-06 | PR #2 |
-| ARIA-SPEC-EXEC-002 | [Capability Contracts](../specs/execution/capability-contracts.md) | Repository Owner (`ChristmasInACup`) | Pending explicit assignment | Draft | Pending | 2026-09-06 | PR #2 |
-| ARIA-SPEC-EXEC-003 | [Execution Governance](../specs/execution/execution-governance.md) | Repository Owner (`ChristmasInACup`) | Pending explicit assignment | Draft | Pending | 2026-09-06 | PR #2 |
-| ARIA-SPEC-EXEC-004 | [External Outcomes](../specs/execution/external-outcomes.md) | Repository Owner (`ChristmasInACup`) | Pending explicit assignment | Draft | Pending | 2026-09-06 | PR #2 |
-| ARIA-SPEC-ASR-001 | [Accountability & Audit](../specs/assurance/accountability-audit.md) | Repository Owner (`ChristmasInACup`) | Pending explicit assignment | Draft | Pending | 2026-09-06 | PR #2 |
-| ARIA-SPEC-ASR-002 | [Observability & Security Assurance](../specs/assurance/observability-security-assurance.md) | Repository Owner (`ChristmasInACup`) | Pending explicit assignment | Draft | Pending | 2026-09-06 | PR #2 |
-| ARIA-SPEC-EVOL-001 | [Trust, Security & Containment](../specs/evolution/trust-security-containment.md) | Repository Owner (`ChristmasInACup`) | Pending explicit assignment | Draft | Pending | 2026-09-06 | PR #2 |
-| ARIA-SPEC-EVOL-002 | [Configuration, Change & Evolution](../specs/evolution/configuration-change-evolution.md) | Repository Owner (`ChristmasInACup`) | Pending explicit assignment | Draft | Pending | 2026-09-06 | PR #2 |
+| ARIA-SPEC-ID-001 | [Identity & Domain](../specs/identity/identity-domain.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
+| ARIA-SPEC-AUTH-001 | [Authorization & Policy](../specs/authority/authorization-policy.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
+| ARIA-SPEC-AUTH-002 | [Delegation & Authority](../specs/authority/delegation-authority.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
+| ARIA-SPEC-AUTH-003 | [Approval, Autonomy & Human Control](../specs/authority/approval-autonomy-human-control.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
+| ARIA-SPEC-KNOW-001 | [Knowledge Lifecycle](../specs/knowledge/knowledge-lifecycle.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
+| ARIA-SPEC-KNOW-002 | [Memory](../specs/knowledge/memory.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
+| ARIA-SPEC-KNOW-003 | [Provenance & Information Trust](../specs/knowledge/provenance-information-trust.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
+| ARIA-SPEC-REAS-001 | [Context Assembly](../specs/reasoning/context-assembly.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
+| ARIA-SPEC-REAS-002 | [Reasoning Coordination](../specs/reasoning/reasoning-coordination.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
+| ARIA-SPEC-REAS-003 | [Provider & Model Governance](../specs/reasoning/provider-model-governance.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
+| ARIA-SPEC-EXEC-001 | [Decision & Proposal](../specs/execution/decision-proposal.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
+| ARIA-SPEC-EXEC-002 | [Capability Contracts](../specs/execution/capability-contracts.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
+| ARIA-SPEC-EXEC-003 | [Execution Governance](../specs/execution/execution-governance.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
+| ARIA-SPEC-EXEC-004 | [External Outcomes](../specs/execution/external-outcomes.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
+| ARIA-SPEC-ASR-001 | [Accountability & Audit](../specs/assurance/accountability-audit.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
+| ARIA-SPEC-ASR-002 | [Observability & Security Assurance](../specs/assurance/observability-security-assurance.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
+| ARIA-SPEC-EVOL-001 | [Trust, Security & Containment](../specs/evolution/trust-security-containment.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
+| ARIA-SPEC-EVOL-002 | [Configuration, Change & Evolution](../specs/evolution/configuration-change-evolution.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
 
 ## Approval Record
 
@@ -63,6 +81,8 @@ The approval record should identify:
 - approving authority;
 - review date;
 - material conditions, if any.
+
+**Important:** Approval of PR #2 is a repository-level approval of the documentation/implementation baseline. It is not an approval record for any of the 18 Draft specifications.
 
 ## Change Rules
 
