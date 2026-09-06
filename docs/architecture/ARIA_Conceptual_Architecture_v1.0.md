@@ -102,7 +102,46 @@ Includes audit, accountability, observability, governance explanations, security
 
 Required accountability must be available at a level appropriate to operational risk. If required evidence cannot be established for a consequential operation, Aria must not silently treat that operation as normally governed; it must apply appropriate safeguards, degrade, restrict, or fail closed according to risk.
 
-## 4. Information and Authority Are Separate
+## 4. Human Interaction: Intent-First and Cognitive Simplicity
+
+A.R.I.A. should minimize the cognitive burden required to accomplish legitimate tasks. Users should be able to express goals and intent without needing to understand A.R.I.A.'s internal architecture, governance mechanisms, tools, models, memory systems, or execution pathways.
+
+### 4.1 Intent-First Interaction
+
+A.R.I.A. should be **intent-first, not mechanism-first**.
+
+The user communicates what they want to accomplish. A.R.I.A. determines the appropriate knowledge, reasoning, capability, and execution pathways within established authority and governance boundaries.
+
+The system should absorb operational, technical, and orchestration complexity rather than requiring users to manually coordinate internal mechanisms.
+
+### 4.2 Human Interaction Principles
+
+A.R.I.A. should:
+
+1. Prefer natural goals over procedural commands.
+2. Infer reasonable defaults when doing so is safe and consistent with established authority and intent.
+3. Ask questions only when the answer materially affects outcome, authority, safety, or user intent.
+4. Ask the smallest useful clarification question when clarification is necessary.
+5. Avoid exposing internal complexity unless it is relevant to the user's decision or understanding.
+6. Explain consequential approvals in terms of the meaningful action and its consequences, not internal implementation machinery.
+7. Preserve a clear path for the human to inspect, correct, override, or take control.
+8. Never require the user to understand A.R.I.A.'s architecture in order to use it effectively.
+
+### 4.3 Simplicity Must Not Conceal Consequences
+
+Cognitive simplicity must not become concealment.
+
+A.R.I.A. must not hide material consequences, uncertainty, authorization requirements, conflicts, or meaningful opportunities for human control merely to make an interaction appear simpler.
+
+The goal is not to hide governance. The goal is to handle governance on the user's behalf and surface it when the human needs to make a meaningful decision.
+
+A useful design test is:
+
+> **Are we making the user operate A.R.I.A., or is A.R.I.A. operating for the user?**
+
+If accomplishing a legitimate goal requires the user to understand or manually coordinate A.R.I.A.'s internal mechanisms, that should be treated as a potential architectural and interface smell rather than merely a cosmetic usability issue.
+
+## 5. Information and Authority Are Separate
 
 Information may inform reasoning without granting permission.
 
@@ -114,7 +153,7 @@ Authorization is also purpose-bound. Permission to use information or perform an
 
 Aggregate inference is governed as well as direct access. A collection of individually authorized facts must not be treated as automatically authorized for sensitive or consequential derived conclusions.
 
-## 5. Trust Model
+## 6. Trust Model
 
 Trust is contextual rather than binary.
 
@@ -131,7 +170,7 @@ Trust does not propagate automatically.
 
 A provider can be trusted for one task and untrusted for another. A module can be capable of an operation without being authorized to perform it. Authentication does not establish information trust.
 
-## 6. Module Contract
+## 7. Module Contract
 
 Aria governs; modules provide capabilities.
 
@@ -147,7 +186,7 @@ A module contract must conceptually establish:
 
 Modules request information and capabilities through governance. They cannot manufacture authority or silently lateralize into unrelated domains.
 
-## 7. Organizational Profiles
+## 8. Organizational Profiles
 
 The Core architecture remains conceptually consistent across organizational scale.
 
@@ -171,7 +210,7 @@ Profiles may vary:
 
 Growth changes governance configuration and scale, not fundamental security boundaries.
 
-## 8. Autonomy and Human Approval
+## 9. Autonomy and Human Approval
 
 Aria recognizes five autonomy levels:
 
@@ -185,7 +224,7 @@ Autonomy is granular and bounded by actor, action, resources, domain, purpose, l
 
 Approval must be specific and bound to the execution it authorizes. Material changes may require new approval.
 
-## 9. Knowledge and Memory
+## 10. Knowledge and Memory
 
 The distinctions are fundamental:
 
@@ -198,7 +237,7 @@ Persistence does not imply truth. Provenance, confidence, freshness, validity, o
 
 Encountering information does not automatically make it memory.
 
-## 10. Provider and Model Governance
+## 11. Provider and Model Governance
 
 AI models are replaceable reasoning resources, not trusted members of the organization.
 
@@ -208,7 +247,7 @@ Provider trust is contextual. Provider output is reasoning evidence, not organiz
 
 Provider and model changes are governance events when they affect risk, privacy, authority, or execution.
 
-## 11. Audit and Accountability
+## 12. Audit and Accountability
 
 Aria should be able to answer:
 
@@ -235,7 +274,7 @@ Request
 
 Governance-level explanations should describe what happened, what information mattered, what authority existed, what policy applied, what was approved, and what executed without requiring exposure of hidden model chain-of-thought.
 
-## 12. Failure and Degraded Operation
+## 13. Failure and Degraded Operation
 
 Aria prefers containment over escalation.
 
@@ -264,7 +303,7 @@ Compromise
  → Restore Capability
 ```
 
-## 13. Evolution
+## 14. Evolution
 
 Aria may evolve in:
 
@@ -281,8 +320,8 @@ Changes affecting authority, domains, knowledge ownership, execution, trust, aud
 
 The architecture must resist gradual drift. Constitutional changes require extraordinary governance.
 
-## 14. Final Architectural Rule
+## 15. Final Architectural Rule
 
 > **No reasoning component, capability, provider, memory, identity, or external input may become an unrestricted source of authority.**
 
-Aria's architecture is successful when intelligence remains useful while governance remains in control.
+Aria's architecture is successful when intelligence remains useful while governance remains in control, and when humans can accomplish legitimate goals without having to operate the machinery that makes that governance possible.
