@@ -1,5 +1,10 @@
 # A.R.I.A. Architecture Specifications
 
+**Status:** FOUNDATIONAL — DRAFT SPECIFICATIONS  
+**Baseline:** Draft  
+**Approval:** Pending explicit review and approval  
+**Last updated:** 2026-09-06
+
 ## Purpose
 
 Architecture specifications translate A.R.I.A.'s approved conceptual and implementation architecture into precise, testable behavioral and boundary requirements.
@@ -7,27 +12,6 @@ Architecture specifications translate A.R.I.A.'s approved conceptual and impleme
 Specifications are the bridge between architectural intent and implementation. They define what must be true without prematurely deciding how it must be implemented.
 
 > **Specifications are things we can test against, not another layer of conceptual prose.**
-
-## Status
-
-**FOUNDATIONAL — DRAFT STRUCTURE**
-
-The specification structure is established. Individual specifications are **PLANNED** and will be developed from the approved implementation architecture before epics, stories, or Codex implementation begin.
-
-The files listed below are the intended specification set; they are not claims that those files already exist. A planned specification may be marked `TBD`, `Draft`, `Under Review`, or `Approved` as it moves through its lifecycle.
-
-## Baseline Governance
-
-| Field | Status |
-|---|---|
-| Baseline status | Draft structure |
-| Owner | A.R.I.A. project owner / maintainer |
-| Approval state | Pending explicit review and approval |
-| Last updated | 2026-09-06 |
-
-This document does not constitute approval by itself. The specification baseline becomes authoritative only through the project's normal review and approval process. The approving review should confirm that the specification structure is complete enough to proceed, that known architectural constraints are represented, and that unresolved questions are explicitly identified.
-
-Any future approved baseline should record its approval through the repository's governed change process rather than by silently changing this status.
 
 ## Architectural Position
 
@@ -48,6 +32,8 @@ EPICS
     ↓
 STORIES
     ↓
+TASKS
+    ↓
 IMPLEMENTATION
     ↓
 TESTS
@@ -55,97 +41,191 @@ TESTS
 EVIDENCE
 ```
 
-Architecture decisions and security constraints apply across these layers.
+A specification is authoritative only within its defined scope and remains subordinate to the Constitution, invariants, and approved architecture. If a specification conflicts with higher-level authority, the conflict must be resolved explicitly; implementation must not silently choose the easier interpretation.
 
-A specification is authoritative within its defined scope, but it is subordinate to the Constitution and approved architecture. If a specification conflicts with a higher architectural authority, the conflict must be resolved explicitly; implementation must not silently choose the easier interpretation.
+## Specification Set
 
-## Specification Domains
-
-The planned specification set is organized around **stable responsibility and ownership boundaries**, not merely around every concept named in the architecture. Some architectural concerns are intentionally combined where they form one coherent contract; others are separated where conflating them would obscure authority, security, or accountability boundaries.
+The foundational decomposition contains **18 draft specifications** organized by stable responsibility and ownership boundaries.
 
 ```text
 docs/specs/
 ├── identity/
-│   └── identity-domain.md                              # PLANNED
+│   └── identity-domain.md                              # DRAFT
 │
 ├── authority/
-│   ├── authorization-policy.md                         # PLANNED
-│   ├── delegation-authority.md                          # PLANNED
-│   └── approval-autonomy-human-control.md               # PLANNED
+│   ├── authorization-policy.md                         # DRAFT
+│   ├── delegation-authority.md                          # DRAFT
+│   └── approval-autonomy-human-control.md               # DRAFT
 │
 ├── knowledge/
-│   ├── knowledge-lifecycle.md                          # PLANNED
-│   ├── memory.md                                       # PLANNED
-│   └── provenance-information-trust.md                 # PLANNED
+│   ├── knowledge-lifecycle.md                          # DRAFT
+│   ├── memory.md                                       # DRAFT
+│   └── provenance-information-trust.md                 # DRAFT
 │
 ├── reasoning/
-│   ├── context-assembly.md                             # PLANNED
-│   ├── reasoning-coordination.md                       # PLANNED
-│   └── provider-model-governance.md                    # PLANNED
+│   ├── context-assembly.md                             # DRAFT
+│   ├── reasoning-coordination.md                       # DRAFT
+│   └── provider-model-governance.md                    # DRAFT
 │
 ├── execution/
-│   ├── decision-proposal.md                            # PLANNED
-│   ├── capability-contracts.md                         # PLANNED
-│   ├── execution-governance.md                         # PLANNED
-│   └── external-outcomes.md                            # PLANNED
+│   ├── decision-proposal.md                            # DRAFT
+│   ├── capability-contracts.md                         # DRAFT
+│   ├── execution-governance.md                         # DRAFT
+│   └── external-outcomes.md                            # DRAFT
 │
 ├── assurance/
-│   ├── accountability-audit.md                         # PLANNED
-│   └── observability-security-assurance.md             # PLANNED
+│   ├── accountability-audit.md                         # DRAFT
+│   └── observability-security-assurance.md             # DRAFT
 │
 └── evolution/
-    ├── trust-security-containment.md                   # PLANNED
-    └── configuration-change-evolution.md               # PLANNED
+    ├── trust-security-containment.md                   # DRAFT
+    └── configuration-change-evolution.md               # DRAFT
 ```
 
-**Total planned specifications: 18.**
+**Total draft specifications: 18.**
 
-The directory structure is intentionally organized by responsibility rather than by implementation technology or anticipated code organization.
+The structure is intentionally organized by responsibility rather than by implementation technology or anticipated code organization.
 
-### Responsibility Decomposition Rules
-
-The specification set follows these rules:
+## Responsibility Decomposition Rules
 
 1. Every important architectural responsibility should have one clear normative owner.
 2. Related mechanisms may share a specification when separating them would create competing or ambiguous sources of authority.
 3. Security-critical boundaries should be separated when doing so makes their guarantees easier to specify and test.
-4. Cross-cutting architectural concerns must still have explicit normative requirements even when they are not implementation components.
-5. A named concept in the conceptual architecture does not automatically require its own specification.
-6. An implementation mechanism must not become a specification boundary merely because it happens to be a module, service, class, provider, or tool.
+4. Cross-cutting concerns must still have explicit normative requirements even when they are not implementation components.
+5. A named concept does not automatically require its own specification.
+6. An implementation mechanism does not become a specification boundary merely because it happens to be a module, service, class, provider, or tool.
 
-### Deliberate Non-Splits
-
-The following concepts remain intentionally within broader specifications:
+## Deliberate Non-Splits
 
 - **Policy** belongs with Authorization & Policy rather than becoming a separate authority source.
-- **Model selection** belongs with Provider & Model Governance rather than becoming a separate architectural subsystem.
-- **Organizational profiles** belong with Identity & Domain and Authority/Governance configuration rather than becoming a peer core subsystem.
-- **Agents** are governed actors/capability or reasoning mechanisms, not an independent authority plane.
+- **Model selection** belongs with Provider & Model Governance.
+- **Organizational profiles** belong with Identity & Domain and Authority/Governance configuration.
+- **Agents** are governed actors, capability mechanisms, or reasoning mechanisms—not an independent authority plane.
 - **Learning & Preferences** are governed knowledge, memory, or configuration changes rather than a new authority source.
-- **Trust and Security** are cross-cutting concerns, but their normative requirements are explicitly captured in the assurance/evolution specifications rather than left as informal principles.
+- **Trust and Security** are cross-cutting concerns whose normative requirements are explicitly represented in the assurance and evolution specifications.
 
-These choices are architectural decomposition decisions, not implementation restrictions.
+## Cross-Specification Ownership Rules
 
-## Architectural Questions Explicitly Covered
+The specifications are designed to preserve these distinctions:
 
-The specification baseline must explicitly account for the following concerns:
+```text
+Identity              ≠ Authorization
+Authorization         ≠ Approval
+Knowledge             ≠ Authority
+Memory                ≠ Truth
+Context               ≠ Memory
+Reasoning             ≠ Authority
+Provider              ≠ Authority
+Capability            ≠ Authority
+Dispatch              ≠ External Outcome
+Accountability        ≠ Audit
+Audit                 ≠ Observability
+Trust                 ≠ Authority
+```
 
-- intent interpretation must not silently create authority
-- authorization and approval must remain distinct
-- final governance must be revalidated at consequential execution where required
-- context aggregation must respect authorization, purpose, domain, and sensitivity
-- provenance and information trust must survive transformation
-- provider/model selection must remain subordinate to governance
-- external dispatch must remain distinct from external outcome
-- accountability evidence must remain distinct from operational observability
-- loss of trust must lead to containment or restriction rather than authority expansion
-- governance-affecting configuration changes must themselves be governed
-- recovery must restore trusted authority and state before normal capability
-- human disablement and takeover must remain available
+No specification may create a competing source of authority merely by describing data, reasoning, capability, trust, or operational behavior.
+
+### Primary normative ownership
+
+- **Identity & Domain** — identity and domain semantics.
+- **Authorization & Policy** — action authorization and policy evaluation.
+- **Delegation & Authority** — delegated authority, limits, non-transitivity, and revocation.
+- **Approval, Autonomy & Human Control** — human approval, bounded autonomy, disablement, override, and takeover.
+- **Knowledge Lifecycle** — information lifecycle, movement, retention, and governance.
+- **Memory** — deliberate persistence and memory semantics.
+- **Provenance & Information Trust** — provenance, transformation, information trust, freshness, validity, and derived knowledge.
+- **Context Assembly** — minimum-necessary authorized context and cross-domain aggregation controls.
+- **Reasoning Coordination** — coordination of reasoning without granting authority.
+- **Provider & Model Governance** — provider/model selection, trust, replaceability, and correctness limitations.
+- **Decision & Proposal** — interpretation, proposed meaning, decisions, and action proposals.
+- **Capability Contracts** — declared capability boundaries and contracts.
+- **Execution Governance** — final consequential governance evaluation and execution control.
+- **External Outcomes** — separation of dispatch from external reality and unknown outcomes.
+- **Accountability & Audit** — responsibility and reconstructable governance evidence.
+- **Observability & Security Assurance** — operational visibility and assurance evidence.
+- **Trust, Security & Containment** — trust loss, compromise containment, isolation, and safe degradation.
+- **Configuration, Change & Evolution** — governed configuration, migration, evolution, and architectural drift prevention.
+
+These are ownership boundaries, not necessarily implementation components.
+
+## Architectural Questions Covered
+
+The specification set explicitly accounts for:
+
+- intent interpretation without silently creating authority;
+- distinct authorization and approval;
+- consequential-use revalidation where required;
+- context aggregation subject to authorization, purpose, domain, and sensitivity;
+- provenance surviving transformation;
+- provider/model selection remaining subordinate to governance;
+- external dispatch remaining distinct from external outcome;
+- accountability evidence remaining distinct from operational observability;
+- trust loss leading to containment or restriction rather than authority expansion;
+- governance-affecting configuration changes being governed events;
+- recovery restoring trusted authority and state before normal capability;
+- human disablement and takeover remaining available.
+
+## Required Specification Structure
+
+Each specification should use this structure unless an approved ADR establishes a justified exception:
+
+1. **Specification ID**
+2. **Title**
+3. **Status**
+4. **Authority / Source Artifacts**
+5. **Scope**
+6. **Non-Goals**
+7. **Actors / Components**
+8. **Preconditions**
+9. **Inputs**
+10. **Required Behavior**
+11. **Authority / Governance Rules**
+12. **Data / Knowledge Rules**
+13. **Trust / Security Requirements**
+14. **Failure / Uncertainty Semantics**
+15. **Temporal / Concurrency Semantics**
+16. **Outputs**
+17. **Accountability / Audit Requirements**
+18. **Invariants Covered**
+19. **Acceptance Criteria**
+20. **Test Obligations**
+21. **Open Questions / ADRs**
+
+## Specification Requirements
+
+Specifications must be:
+
+- **Precise** — behavior and boundaries are unambiguous.
+- **Testable** — requirements produce observable evidence.
+- **Traceable** — important requirements have an architectural source.
+- **Technology-agnostic by default** — implementation choices belong below this layer unless technology itself is an architectural constraint.
+- **Explicit about authority** — no capability, data source, model, or technical path silently creates authority.
+- **Explicit about failure** — success is not the only meaningful outcome.
+- **Explicit about uncertainty** — unknown remains a legitimate state.
+- **Security-preserving** — trust boundaries and containment assumptions remain intact.
+- **Evolution-friendly** — stable contracts are preferred over accidental implementation details.
+- **Invariant-consistent** — specifications cannot satisfy themselves by violating higher-level rules.
+
+## Prohibited Behaviors
+
+Specifications must not:
+
+- redefine the Constitution;
+- silently change conceptual architecture;
+- grant authority because an implementation can technically perform an action;
+- treat a provider or model as an authorization boundary;
+- turn memory into truth merely because it is persisted;
+- equate approval with unrestricted authorization;
+- assume successful dispatch means successful external execution;
+- encode framework, language, database, cloud, or vendor choices without architectural justification;
+- hide unresolved design decisions inside implementation requirements;
+- create duplicate or competing sources of authority.
+
+If a specification appears to require a new architectural capability or boundary, stop and revisit the architecture rather than smuggling the change into the specification.
 
 ## Traceability
 
-Every specification should be traceable through the architectural hierarchy:
+Every specification should be traceable through:
 
 ```text
 Constitution
@@ -167,167 +247,49 @@ Tests
 Evidence
 ```
 
-This traceability is a defense against architectural drift and knowledge debt. A requirement without a clear architectural origin should be treated as a candidate decision or open question rather than silently becoming implementation behavior.
+A requirement without a clear architectural origin should be treated as a candidate decision or open question rather than silently becoming implementation behavior.
 
-## Required Specification Structure
-
-Each specification should use the following structure unless an approved ADR establishes a justified exception.
-
-### Specification ID
-
-A stable identifier for the specification.
-
-### Title
-
-A concise description of the governed behavior or boundary.
-
-### Status
-
-For example: Draft, Under Review, Approved, Superseded, or Retired.
-
-### Authority / Source Artifacts
-
-Identify the Constitution, invariants, conceptual architecture, implementation architecture, ADRs, or other authoritative artifacts from which the specification derives.
-
-### Scope
-
-Define what the specification governs.
-
-### Non-Goals
-
-Explicitly identify what the specification does not govern.
-
-### Actors / Components
-
-Identify relevant actors, logical components, external systems, or human control points.
-
-### Preconditions
-
-State what must already be true before the specified behavior may occur.
-
-### Inputs
-
-Define required inputs, their trust assumptions, provenance requirements, and validation expectations.
-
-### Required Behavior
-
-State normative behavior precisely. Avoid implementation-specific instructions unless they are themselves architectural requirements.
-
-### Authority / Governance Rules
-
-Define authorization, policy, delegation, approval, autonomy, scope, expiration, revocation, and separation-of-duty requirements that apply.
-
-### Data / Knowledge Rules
-
-Define ownership, provenance, sensitivity, purpose, freshness, validity, retention, sharing, transformation, and lifecycle requirements as applicable.
-
-### Trust / Security Requirements
-
-Define trust boundaries, validation, isolation, least privilege, compromise assumptions, and security requirements.
-
-### Failure / Uncertainty Semantics
-
-Explicitly define behavior for denial, unavailable dependencies, partial completion, unknown outcomes, conflicting information, stale information, invalid state, and loss of trust.
-
-### Temporal / Concurrency Semantics
-
-Define validity windows, expiration, revocation, versioning, ordering, duplicate requests, replay behavior, and time-of-check/time-of-use considerations where applicable.
-
-### Outputs
-
-Define returned information, decisions, proposals, execution intents, or other observable results.
-
-### Accountability / Audit Requirements
-
-Define what evidence must be preserved to reconstruct significant governed events and establish who or what acted, why, under what authority, using what information, and with what result.
-
-### Invariants Covered
-
-List the architectural invariants that this specification must preserve.
-
-### Acceptance Criteria
-
-Define observable conditions that establish whether the specification has been satisfied.
-
-### Test Obligations
-
-Identify required tests, including positive, negative, boundary, failure, security, authorization, and invariant-driven cases as appropriate.
-
-### Open Questions / ADRs
-
-Record unresolved architectural questions and link to an ADR when a decision is required.
-
-## Specification Requirements
-
-Specifications must be:
-
-- **Precise** — behavior and boundaries should be unambiguous.
-- **Testable** — requirements should produce observable evidence.
-- **Traceable** — important requirements should have an architectural source.
-- **Technology-agnostic by default** — implementation choices belong in implementation architecture or ADRs unless technology itself is a required constraint.
-- **Explicit about authority** — no capability, data source, model, or technical path may silently create authority.
-- **Explicit about failure** — success is not the only meaningful outcome.
-- **Explicit about uncertainty** — unknown must remain a legitimate state.
-- **Security-preserving** — specifications must preserve trust boundaries and containment assumptions.
-- **Evolution-friendly** — specifications should describe stable contracts rather than accidental implementation details.
-- **Consistent with invariants** — an implementation must not satisfy a specification by violating a higher-level invariant.
-
-## What Specifications Must Not Do
-
-Specifications must not:
-
-- redefine the Constitution
-- silently change conceptual architecture
-- grant authority merely because an implementation can technically perform an action
-- treat an AI provider or model as an authorization boundary
-- turn memory into truth merely because it is persisted
-- equate approval with unrestricted authorization
-- assume successful dispatch means successful external execution
-- encode framework, language, database, cloud, or vendor choices without architectural justification
-- hide unresolved design decisions inside implementation requirements
-- create duplicate or competing sources of authority
-
-If a specification appears to require a new architectural capability or boundary, stop and revisit the architecture rather than smuggling the change into the specification.
-
-## Specification Lifecycle
+## Lifecycle
 
 1. **Derive** — identify requirements from approved architecture and invariants.
 2. **Draft** — write the specification using the required structure.
-3. **Consistency Review** — verify alignment with the Constitution, invariants, and architecture.
+3. **Consistency Review** — verify alignment with higher-level authority and sibling specifications.
 4. **Testability Review** — verify that requirements can produce objective evidence.
 5. **Approval / Baseline** — establish the approved specification version.
-6. **Implement** — derive epics and stories from approved specifications.
+6. **Implement** — derive capabilities, epics, and stories from approved specifications.
 7. **Validate** — verify implementation against acceptance criteria and invariants.
-8. **Change Through Governance** — update specifications deliberately and record architectural decisions where required.
+8. **Change Through Governance** — update specifications deliberately and record ADRs when required.
 
 ## Readiness for Epics and Stories
 
 The specification phase is ready to feed project planning when:
 
-- required architectural responsibilities have specifications or an explicit documented reason for exclusion
-- important boundaries have normative behavior defined
-- authority and data ownership are explicit
-- failure and uncertainty semantics are defined
-- security and trust assumptions are explicit
-- acceptance criteria are testable
-- architectural invariants are mapped to specifications
-- unresolved questions are identified and assigned to ADRs where appropriate
-- no specification silently changes higher-level architecture
+- all important architectural responsibilities have specifications or an explicit documented reason for exclusion;
+- authority and data ownership are explicit;
+- failure and uncertainty semantics are defined;
+- security and trust assumptions are explicit;
+- acceptance criteria are testable;
+- all architectural invariants have clear specification coverage;
+- unresolved questions are identified and assigned to ADRs where appropriate;
+- no specification silently changes higher-level architecture;
+- cross-specification ownership and boundaries have been reviewed.
 
-Only then should specifications be decomposed into epics and stories.
+**Current state:** Draft specifications exist. Approval and cross-document consistency review remain before epics and stories are authorized to begin.
 
 ## Relationship to Implementation
 
 Specifications answer **what must be true**.
 
-Implementation architecture answers **how the system is organized to make those requirements possible**.
+Implementation architecture answers **how the system is logically organized to make those requirements possible**.
 
 Code answers **how those approved structures and behaviors are realized**.
 
-Tests provide **evidence that the implementation satisfies the approved requirements and preserves the invariants**.
+Tests provide **evidence that the implementation satisfies approved requirements and preserves invariants**.
 
 ```text
 Specification
+     ↓
+Capability
      ↓
 Epic
      ↓
@@ -338,7 +300,7 @@ Implementation
 Test Evidence
 ```
 
-Codex and other AI engineering tools operate below this boundary. They may implement approved requirements, but they do not have authority to redefine them.
+AI engineering tools operate below this boundary. They may implement approved requirements, but they do not have authority to redefine them.
 
 ## Governing Principle
 
