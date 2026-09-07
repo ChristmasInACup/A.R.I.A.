@@ -2,6 +2,9 @@
 
 **Status:** Architectural Baseline — Draft for Review
 
+> **Purpose:** Define how capabilities are bounded and composed without becoming sources of authority.  
+> **What done looks like:** Every capability has an explicit contract, authority boundary, governance path, result semantics, trust requirements, and accountability expectations.
+
 ## 1. Purpose
 
 This document defines what a capability is, how capabilities are bounded, and how capabilities compose without becoming sources of authority.
@@ -99,6 +102,20 @@ Higher-impact capabilities require stronger controls appropriate to their risk, 
 
 The architecture does not require every capability to have identical controls. It requires controls to be explicit and proportionate.
 
-## 10. Architectural Rule
+## 10. What Done Looks Like
+
+Before implementation proceeds for a capability, verify:
+
+- its operation and purpose are explicit;
+- required inputs and access boundaries are explicit;
+- its authority boundary is explicit;
+- preconditions and constraints are defined;
+- consequential effects and reversibility are understood;
+- success, failure, partial, and unknown outcomes are defined;
+- trust and risk requirements are identified;
+- accountability evidence is identified;
+- composition does not create implicit authority.
+
+## 11. Architectural Rule
 
 > **A.R.I.A. may compose capabilities, but no capability may compose itself into authority.**
