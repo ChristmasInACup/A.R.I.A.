@@ -2,6 +2,9 @@
 
 **Status:** Architectural Baseline — Draft for Review
 
+> **Purpose:** Determine whether the conceptual architecture is sufficiently complete to prevent implementation from inventing fundamental architecture.  
+> **What done looks like:** The red-team tests find no unresolved authority, information, trust, governance, capability, failure, or human-control escape path, and implementation can proceed without silently creating architecture.
+
 ## 1. Purpose
 
 This document determines whether the conceptual architecture is sufficiently complete to prevent implementation from inventing fundamental architecture while coding.
@@ -158,7 +161,18 @@ The architecture is complete enough for implementation when:
 12. humans retain disablement, replacement, override, and takeover;
 13. unresolved decisions are explicitly pushed to lower architectural/specification layers rather than left implicit.
 
-## 7. Conclusion
+## 7. What Done Looks Like
+
+The architectural completion baseline is ready for approval when:
+
+- all red-team questions have a clear architectural answer;
+- all completion documents are discoverable and consistent with Conceptual Architecture v1.0;
+- no unresolved contradiction with the Constitution or invariants is known;
+- the canonical hierarchy is consistent across architecture, governance, and contribution documentation;
+- remaining implementation choices are explicitly below the conceptual architecture layer;
+- any genuine architectural gap discovered later must be reopened through explicit governance.
+
+## 8. Conclusion
 
 The A.R.I.A. conceptual architecture is considered **closed for implementation at the level of current first principles**. Further architectural work should occur only when a concrete lower-layer requirement exposes a genuine architectural gap or contradiction.
 
