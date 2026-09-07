@@ -2,13 +2,13 @@
 
 ## Purpose
 
-This directory contains A.R.I.A.'s conceptual architecture and the architectural closure documents that establish its stable first-principles boundaries.
+This directory contains A.R.I.A.'s conceptual architecture and the architectural completion documents that establish its stable first-principles boundaries.
 
 ## Current Baseline
 
 **Conceptual Architecture:** Frozen — v1.0
 
-**Architecture Completion:** Baseline established on `architecture/capability-baseline`; pending explicit review before being treated as the next approved architectural baseline.
+**Architectural Baseline:** The foundational conceptual architecture and the architectural completion documents together form the current conceptual architecture baseline once this branch is approved.
 
 The conceptual architecture is the stable architectural model from which implementation architecture and specifications are derived.
 
@@ -27,9 +27,11 @@ The conceptual architecture is the stable architectural model from which impleme
 - [Learning and Preference Architecture](Learning_and_Preference_Architecture.md)
 - [Architectural Closure and Red-Team Baseline](Architectural_Closure_and_Red_Team.md)
 
+These documents refine and close areas intentionally left at the conceptual level without contradicting Conceptual Architecture v1.0. Once reviewed and approved, they become part of the current architectural baseline.
+
 ## Architectural Authority
 
-The conceptual architecture and its approved extensions are subordinate to:
+The conceptual architecture and its approved completion documents are subordinate to:
 
 ```text
 Constitution
@@ -48,7 +50,7 @@ Constitution
     ↓
 Invariants
     ↓
-Conceptual Architecture
+Conceptual Architecture Baseline
     ↓
 Implementation Architecture
     ↓
@@ -65,7 +67,7 @@ The architecture defines **what must fundamentally remain true**. Lower layers d
 
 ## Architectural Completion Rule
 
-The architecture is considered closed when a reasonable implementation problem can be placed into an existing boundary without inventing a new source of authority, trust, knowledge, execution permission, or human-control exception.
+The architecture is considered closed for implementation when a reasonable implementation problem can be placed into an existing boundary without inventing a new source of authority, trust, knowledge, execution permission, or human-control exception.
 
 If implementation reveals a genuine architectural gap, the architecture must be deliberately reopened through governance. Implementation may refine architecture; it may not silently create architecture.
 
