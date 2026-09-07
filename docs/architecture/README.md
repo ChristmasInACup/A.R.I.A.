@@ -18,6 +18,13 @@ This directory contains A.R.I.A.'s conceptual architecture and the architectural
 | [Architecture Change Process](Architecture_Change_Process.md) | Change governance | How architectural changes are proposed, reviewed, approved, and recorded |
 | [Architecture Review Checklist](Architecture_Review_Checklist.md) | Review aid | Repeatable architectural review and approval checks |
 
+## Governance and Traceability
+
+- [Architecture Traceability Matrix](../governance/Architecture_Traceability_Matrix.md) — maps the 41 architectural invariants to specifications and future verification/evidence targets.
+- [ADR-0001: Establish the Architectural Completion Baseline](../decisions/ADR-0001-architectural-completion-baseline.md) — records why the completion documents were added and the approval/merge sequence.
+- [Architecture Change Process](Architecture_Change_Process.md) — defines how future architectural changes are proposed, reviewed, approved, and recorded.
+- [Architecture Review Checklist](Architecture_Review_Checklist.md) — provides the repeatable review and approval checks.
+
 ## Current Baseline
 
 **Conceptual Architecture:** Frozen — v1.0
