@@ -4,9 +4,30 @@
 **Architecture phase:** Complete  
 **Implementation phase:** Beginning
 
+> **Purpose:** Establish the foundational conceptual boundaries that keep identity, authority, knowledge, reasoning, capability, execution, accountability, and human control separate.  
+> **What done looks like:** A reasonable implementation can fit within these boundaries without inventing authority, trust, knowledge, execution, or human-control exceptions.
+
+## Navigation
+
+- [1. Architectural Goal](#1-architectural-goal)
+- [2. End-to-End Lifecycle](#2-end-to-end-lifecycle)
+- [3. Six Core Capabilities](#3-six-core-capabilities)
+- [4. Human Interaction](#4-human-interaction-intent-first-and-cognitive-simplicity)
+- [5. Information and Authority](#5-information-and-authority-are-separate)
+- [6. Trust Model](#6-trust-model)
+- [7. Module Contract](#7-module-contract)
+- [8. Organizational Profiles](#8-organizational-profiles)
+- [9. Autonomy and Human Approval](#9-autonomy-and-human-approval)
+- [10. Knowledge and Memory](#10-knowledge-and-memory)
+- [11. Provider and Model Governance](#11-provider-and-model-governance)
+- [12. Audit and Accountability](#12-audit-and-accountability)
+- [13. Failure and Degraded Operation](#13-failure-and-degraded-operation)
+- [14. Evolution](#14-evolution)
+- [15. Final Architectural Rule](#15-final-architectural-rule)
+
 ## 1. Architectural Goal
 
-Aria is designed as a governed intelligence layer rather than as an autonomous AI agent with authority of its own.
+A.R.I.A. is designed as a governed intelligence layer rather than as an autonomous AI agent with authority of its own.
 
 The architecture separates identity, authority, knowledge, context, reasoning, capability, execution, and accountability so that no model, module, provider, or compromised component can silently become the system's unrestricted authority.
 
@@ -80,7 +101,7 @@ Context assembly must preserve applicable domain, purpose, sensitivity, provenan
 
 ### 3.5 Capability & Execution Governance
 
-Answers: **How does Aria turn an authorized decision into a real-world action?**
+Answers: **How does A.R.I.A. turn an authorized decision into a real-world action?**
 
 Includes modules, agents, tools, capability contracts, execution planning, execution authorization, validation, external systems, result handling, failure handling, partial and unknown outcomes, and reversibility.
 
@@ -96,11 +117,11 @@ Reasoning
 
 ### 3.6 Accountability & Assurance
 
-Answers: **Can we determine what happened, why, and whether Aria behaved correctly?**
+Answers: **Can we determine what happened, why, and whether A.R.I.A. behaved correctly?**
 
 Includes audit, accountability, observability, governance explanations, security events, anomaly detection, change tracking, historical reconstruction, and integrity monitoring.
 
-Required accountability must be available at a level appropriate to operational risk. If required evidence cannot be established for a consequential operation, Aria must not silently treat that operation as normally governed; it must apply appropriate safeguards, degrade, restrict, or fail closed according to risk.
+Required accountability must be available at a level appropriate to operational risk. If required evidence cannot be established for a consequential operation, A.R.I.A. must not silently treat that operation as normally governed; it must apply appropriate safeguards, degrade, restrict, or fail closed according to risk.
 
 ## 4. Human Interaction: Intent-First and Cognitive Simplicity
 
@@ -172,7 +193,7 @@ A provider can be trusted for one task and untrusted for another. A module can b
 
 ## 7. Module Contract
 
-Aria governs; modules provide capabilities.
+A.R.I.A. governs; modules provide capabilities.
 
 A module contract must conceptually establish:
 
@@ -212,7 +233,7 @@ Growth changes governance configuration and scale, not fundamental security boun
 
 ## 9. Autonomy and Human Approval
 
-Aria recognizes five autonomy levels:
+A.R.I.A. recognizes five autonomy levels:
 
 0. Observe
 1. Recommend
@@ -228,7 +249,7 @@ Approval must be specific and bound to the execution it authorizes. Material cha
 
 The distinctions are fundamental:
 
-- **Knowledge** = information available to Aria.
+- **Knowledge** = information available to A.R.I.A.
 - **Memory** = information deliberately retained.
 - **Context** = information selected for a task.
 - **Reasoning** = conclusions drawn from context.
@@ -249,7 +270,7 @@ Provider and model changes are governance events when they affect risk, privacy,
 
 ## 12. Audit and Accountability
 
-Aria should be able to answer:
+A.R.I.A. should be able to answer:
 
 > **Who did what, why, using what authority, with what information, through what reasoning process, resulting in what outcome?**
 
@@ -276,7 +297,7 @@ Governance-level explanations should describe what happened, what information ma
 
 ## 13. Failure and Degraded Operation
 
-Aria prefers containment over escalation.
+A.R.I.A. prefers containment over escalation.
 
 Conceptual degraded modes:
 
@@ -305,7 +326,7 @@ Compromise
 
 ## 14. Evolution
 
-Aria may evolve in:
+A.R.I.A. may evolve in:
 
 - providers and models
 - modules and tools
@@ -324,4 +345,4 @@ The architecture must resist gradual drift. Constitutional changes require extra
 
 > **No reasoning component, capability, provider, memory, identity, or external input may become an unrestricted source of authority.**
 
-Aria's architecture is successful when intelligence remains useful while governance remains in control, and when humans can accomplish legitimate goals without having to operate the machinery that makes that governance possible.
+A.R.I.A.'s architecture is successful when intelligence remains useful while governance remains in control, and when humans can accomplish legitimate goals without having to operate the machinery that makes that governance possible.
