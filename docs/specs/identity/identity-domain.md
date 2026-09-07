@@ -55,7 +55,7 @@ Significant governed events shall record the identity and domain basis used for 
 
 ## Acceptance Criteria
 - Identity never directly authorizes an action.
-- Domain crossing requires explicit governance.
+- Domain crossing requires explicit governance, evidenced by an applicable authorization/governance decision before the consequential action proceeds.
 - Invalid or unresolved identity cannot silently become trusted identity.
 - Identity changes are attributable and auditable.
 
