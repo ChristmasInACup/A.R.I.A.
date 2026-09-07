@@ -160,7 +160,7 @@ The architecture is complete enough for implementation when:
 
 ## 7. Conclusion
 
-The A.R.I.A. conceptual architecture is closed at the level of first principles. Further architectural work should occur only when a concrete lower-layer requirement exposes a genuine architectural gap or contradiction.
+The A.R.I.A. conceptual architecture is considered **closed for implementation at the level of current first principles**. Further architectural work should occur only when a concrete lower-layer requirement exposes a genuine architectural gap or contradiction.
 
 The default response to an implementation problem is therefore not to invent a new architectural shortcut. It is to identify which existing boundary governs the problem and, if no boundary applies, deliberately reopen architecture through governance.
 
