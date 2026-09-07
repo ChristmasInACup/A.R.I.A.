@@ -32,7 +32,13 @@ Tests
 Evidence
 ```
 
-If a change affects authority, security, domains, knowledge or memory, execution, trust, audit, autonomy, providers/model governance, human control, or constitutional/architectural boundaries, document the design impact before implementation. Create an ADR when the decision has durable consequences.
+If a change affects authority, security, domains, knowledge or memory, execution, trust, audit, autonomy, providers/model governance, human control, or constitutional/architectural boundaries, follow the [Architecture Change Process](docs/architecture/Architecture_Change_Process.md) before implementation. Create an ADR when the decision has durable consequences.
+
+## Architecture Review
+
+Use the [Architecture Review Checklist](docs/architecture/Architecture_Review_Checklist.md) for architectural changes and baseline approvals.
+
+The conceptual architecture is considered closed for implementation at the level of current first principles. If implementation reveals a genuine architectural gap or contradiction, stop and use the Architecture Change Process rather than creating an implicit architectural exception.
 
 ## Branch and Change Policy
 
@@ -150,3 +156,7 @@ Passing tests do not substitute for architectural approval.
 Prefer small, reviewable changes. Preserve provenance for architectural decisions. Avoid provider-specific, implementation-specific, or convenience-driven assumptions in foundational architecture documents.
 
 When a lower-level change appears to require changing a higher-level rule, escalate the decision rather than allowing architectural drift to enter through implementation.
+
+## Canonical Naming
+
+The project name is written consistently as **A.R.I.A.** across repository documentation.
