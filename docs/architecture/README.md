@@ -4,6 +4,20 @@
 
 This directory contains A.R.I.A.'s conceptual architecture and the architectural completion documents that establish its stable first-principles boundaries.
 
+## Quick Navigation
+
+| Document | Purpose | What it closes |
+|---|---|---|
+| [Conceptual Architecture v1.0](ARIA_Conceptual_Architecture_v1.0.md) | Foundational architecture | Identity, authority, knowledge, reasoning, capability, execution, accountability, and human control |
+| [Capability Architecture](Capability_Architecture.md) | Capability boundaries | Capability contracts, composition, risk, and separation from authority |
+| [Organizational Profiles Architecture](Organizational_Profiles_Architecture.md) | Organizational scale | Profiles, configuration, risk depth, multi-domain boundaries, and growth |
+| [Autonomy Architecture](Autonomy_Architecture.md) | Bounded autonomy | Autonomy levels, standing authority, escalation, revocation, and human control |
+| [Agent Architecture](Agent_Architecture.md) | Governed agents | Agent scope, delegation, context, capabilities, lifecycle, and failure |
+| [Learning and Preference Architecture](Learning_and_Preference_Architecture.md) | Governed adaptation | Learning sources, preference boundaries, correction, forgetting, and authority safety |
+| [Architectural Closure and Red-Team Baseline](Architectural_Closure_and_Red_Team.md) | Architecture closure | End-to-end completeness, red-team questions, debt prevention, and implementation readiness |
+| [Architecture Change Process](Architecture_Change_Process.md) | Change governance | How architectural changes are proposed, reviewed, approved, and recorded |
+| [Architecture Review Checklist](Architecture_Review_Checklist.md) | Review aid | Repeatable architectural review and approval checks |
+
 ## Current Baseline
 
 **Conceptual Architecture:** Frozen — v1.0
@@ -12,22 +26,35 @@ This directory contains A.R.I.A.'s conceptual architecture and the architectural
 
 The conceptual architecture is the stable architectural model from which implementation architecture and specifications are derived.
 
-## Documents
+## Architectural Structure
 
-### Foundational Architecture
-
-- [A.R.I.A. Conceptual Architecture v1.0](ARIA_Conceptual_Architecture_v1.0.md)
-
-### Architectural Completion
-
-- [Capability Architecture](Capability_Architecture.md)
-- [Organizational Profiles Architecture](Organizational_Profiles_Architecture.md)
-- [Autonomy Architecture](Autonomy_Architecture.md)
-- [Agent Architecture](Agent_Architecture.md)
-- [Learning and Preference Architecture](Learning_and_Preference_Architecture.md)
-- [Architectural Closure and Red-Team Baseline](Architectural_Closure_and_Red_Team.md)
-
-These documents refine and close areas intentionally left at the conceptual level without contradicting Conceptual Architecture v1.0. Once reviewed and approved, they become part of the current architectural baseline.
+```text
+Constitution
+    ↓
+Invariants
+    ↓
+Conceptual Architecture v1.0
+    ↓
+Architectural Completion / Current Conceptual Baseline
+    ↓
+Implementation Architecture
+    ↓
+Architecture Specifications
+    ↓
+Capabilities
+    ↓
+Epics
+    ↓
+Stories
+    ↓
+Tasks
+    ↓
+Implementation
+    ↓
+Tests
+    ↓
+Evidence
+```
 
 ## Architectural Authority
 
@@ -45,24 +72,6 @@ Architectural documents are authoritative within their defined scope. They must 
 
 ## Relationship to Lower Layers
 
-```text
-Constitution
-    ↓
-Invariants
-    ↓
-Conceptual Architecture Baseline
-    ↓
-Implementation Architecture
-    ↓
-Architecture Specifications
-    ↓
-Capabilities / Epics / Stories
-    ↓
-Implementation
-    ↓
-Tests / Evidence
-```
-
 The architecture defines **what must fundamentally remain true**. Lower layers determine how those requirements are represented and delivered without violating higher-level authority.
 
 ## Architectural Completion Rule
@@ -74,3 +83,5 @@ If implementation reveals a genuine architectural gap, the architecture must be 
 ## Change Rule
 
 Changes to the conceptual architecture are architectural changes. They require explicit review and must preserve or deliberately amend the Constitution and invariants through the governed change process.
+
+See the [Architecture Change Process](Architecture_Change_Process.md) for the required process.
