@@ -2,6 +2,9 @@
 
 **Status:** Architectural Baseline — Draft for Review
 
+> **Purpose:** Define how A.R.I.A. may act without obtaining a new human decision at every step while remaining bounded by existing authority and governance.  
+> **What done looks like:** Every autonomous action has a bounded authority envelope, explicit conditions, revocation/expiration semantics, escalation rules, and human control.
+
 ## 1. Purpose
 
 Autonomy determines how much execution A.R.I.A. may perform without obtaining a new human decision at each step. Autonomy never creates authority; it operates within authority already established by governance.
@@ -64,6 +67,19 @@ Humans retain the ability to inspect, interrupt, override, disable, and take con
 
 Autonomy must never become a one-way transfer of organizational control.
 
-## 9. Architectural Rule
+## 9. What Done Looks Like
+
+Before autonomous execution is enabled, verify:
+
+- the applicable autonomy level is explicit;
+- the principal, action, resources, domain, purpose, scope/value, time, conditions, and risk limits are bounded;
+- required evidence is defined;
+- escalation triggers are defined;
+- approval requirements are explicit where applicable;
+- expiration, revocation, and material-change behavior are defined;
+- consequential failure reduces capability rather than weakening governance;
+- human interruption, override, disablement, and takeover remain available.
+
+## 10. Architectural Rule
 
 > **Autonomy is bounded execution under authority; it is never authority created by execution.**
