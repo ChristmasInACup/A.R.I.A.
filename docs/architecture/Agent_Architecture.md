@@ -2,6 +2,9 @@
 
 **Status:** Architectural Baseline — Draft for Review
 
+> **Purpose:** Define agents as bounded mechanisms for pursuing goals through reasoning and capabilities without becoming sources of organizational authority.  
+> **What done looks like:** Every agent has explicit identity, scope, authorized context, capabilities, autonomy limits, accountability, lifecycle, and failure behavior.
+
 ## 1. Purpose
 
 An agent is a mechanism for pursuing a bounded goal through reasoning and capabilities. The agent abstraction must not become a shortcut around identity, authorization, governance, accountability, or human control.
@@ -86,6 +89,21 @@ An agent that loses required trust, authorization, context integrity, or account
 
 Agent failure must not cause authority to migrate automatically to another agent or provider.
 
-## 9. Architectural Rule
+## 9. What Done Looks Like
+
+Before an agent is allowed to operate, verify:
+
+- identity and governing principal are explicit;
+- objective/task scope is bounded;
+- authorized context is defined;
+- permitted capabilities and execution constraints are explicit;
+- autonomy limits are defined;
+- accountability requirements are identified;
+- delegation rules do not exceed the delegator's authority;
+- external instructions cannot redefine governance;
+- failure and revocation behavior are defined;
+- authority cannot migrate automatically following failure.
+
+## 10. Architectural Rule
 
 > **An agent is a governed actor-like mechanism, not a new source of organizational authority.**
