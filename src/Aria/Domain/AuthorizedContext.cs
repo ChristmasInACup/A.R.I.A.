@@ -27,8 +27,14 @@ public sealed record AuthorizedContext
         AuthorizationGrant grant,
         IReadOnlyDictionary<string, string> values)
     {
+        ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(grant);
         ArgumentNullException.ThrowIfNull(values);
+
+        if (!grant.AppliesTo(request))
+        {
+            throw new ArgumentException("The authorization grant does not apply to the request.", nameof(grant));
+        }
 
         var snapshot = new Dictionary<string, string>(values);
         return new AuthorizedContext(
