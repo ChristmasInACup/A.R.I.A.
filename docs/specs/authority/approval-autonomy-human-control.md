@@ -1,7 +1,7 @@
 # Approval, Autonomy & Human Control Specification
 
 **Specification ID:** ARIA-SPEC-AUTH-003
-**Status:** Draft
+**Status:** Approved
 **Authority:** Constitution; Invariants 22, 25, 38–41; Conceptual Architecture §8, §12; Implementation Architecture §12
 
 ## Scope
