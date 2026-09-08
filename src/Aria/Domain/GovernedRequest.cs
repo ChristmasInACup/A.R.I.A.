@@ -12,24 +12,28 @@ public sealed record GovernedRequest(
     }
 }
 
-public readonly record struct SubjectId(string Value)
+public readonly record struct SubjectId
 {
-    public SubjectId(string value) : this()
+    public SubjectId(string value)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(value);
         Value = value;
     }
+
+    public string Value { get; }
 
     public override string ToString() => Value;
 }
 
-public readonly record struct DomainId(string Value)
+public readonly record struct DomainId
 {
-    public DomainId(string value) : this()
+    public DomainId(string value)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(value);
         Value = value;
     }
+
+    public string Value { get; }
 
     public override string ToString() => Value;
 }
