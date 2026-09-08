@@ -152,7 +152,7 @@ public sealed class FirstSliceTests
     private sealed class StubContextAssembler : IContextAssembler
     {
         public AuthorizedContext Assemble(GovernedRequest request, AuthorizationGrant authorization) =>
-            AuthorizedContext.CreateForTesting(
+            AuthorizedContext.Create(
                 request,
                 authorization,
                 new Dictionary<string, string>
@@ -164,7 +164,7 @@ public sealed class FirstSliceTests
     private sealed class FilteringContextAssembler : IContextAssembler
     {
         public AuthorizedContext Assemble(GovernedRequest request, AuthorizationGrant authorization) =>
-            AuthorizedContext.CreateForTesting(
+            AuthorizedContext.Create(
                 request,
                 authorization,
                 new Dictionary<string, string>
@@ -176,7 +176,7 @@ public sealed class FirstSliceTests
     private sealed class DictionaryContextAssembler(Dictionary<string, string> values) : IContextAssembler
     {
         public AuthorizedContext Assemble(GovernedRequest request, AuthorizationGrant authorization) =>
-            AuthorizedContext.CreateForTesting(request, authorization, values);
+            AuthorizedContext.Create(request, authorization, values);
     }
 
     private sealed class ThrowingContextAssembler : IContextAssembler
