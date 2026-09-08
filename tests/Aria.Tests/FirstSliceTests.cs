@@ -1,5 +1,6 @@
 using Aria.Domain;
 using Aria.Governance;
+using Xunit;
 
 namespace Aria.Tests;
 
