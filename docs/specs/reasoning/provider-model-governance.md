@@ -1,7 +1,7 @@
 # Provider & Model Governance Specification
 
 **Specification ID:** ARIA-SPEC-REAS-003
-**Status:** Draft
+**Status:** Approved
 **Authority:** Invariants 20–21, 25, 27, 33; Conceptual Architecture §10; Implementation Architecture §9
 
 ## Scope
