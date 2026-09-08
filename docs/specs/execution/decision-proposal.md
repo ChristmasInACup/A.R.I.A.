@@ -1,7 +1,7 @@
 # Decision & Proposal Specification
 
 **Specification ID:** ARIA-SPEC-EXEC-001
-**Status:** Draft
+**Status:** Approved
 **Authority:** Invariants 1, 8, 21–25; Conceptual Architecture §3–4; Implementation Architecture §10
 
 ## Scope

@@ -1,7 +1,7 @@
 # Reasoning Coordination Specification
 
 **Specification ID:** ARIA-SPEC-REAS-002
-**Status:** Draft
+**Status:** Approved
 **Authority:** Invariants 1, 17–21, 27; Conceptual Architecture §4, §10; Implementation Architecture §8
 
 ## Scope

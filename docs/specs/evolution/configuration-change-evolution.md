@@ -1,7 +1,7 @@
 # Configuration, Change & Evolution Specification
 
 **Specification ID:** ARIA-SPEC-EVOL-002
-**Status:** Draft
+**Status:** Approved
 **Authority:** Invariants 31, 33–37, 38–41; Conceptual Architecture §7, §10, §13; Implementation Architecture §22–24, §28
 
 ## Scope

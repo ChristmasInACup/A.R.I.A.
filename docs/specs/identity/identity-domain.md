@@ -1,7 +1,7 @@
 # Identity & Domain Specification
 
 **Specification ID:** ARIA-SPEC-ID-001
-**Status:** Draft
+**Status:** Approved
 **Authority:** Constitution; Invariants 3, 4, 9, 17–19, 34; Conceptual Architecture §3; Implementation Architecture §4
 
 ## Scope

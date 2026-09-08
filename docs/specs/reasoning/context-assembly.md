@@ -1,7 +1,7 @@
 # Context Assembly Specification
 
 **Specification ID:** ARIA-SPEC-REAS-001
-**Status:** Draft
+**Status:** Approved
 **Authority:** Invariants 9–16, 17–21, 27; Conceptual Architecture §4; Implementation Architecture §7
 
 ## Scope

@@ -1,7 +1,7 @@
 # Memory Specification
 
 **Specification ID:** ARIA-SPEC-KNOW-002
-**Status:** Draft
+**Status:** Approved
 **Authority:** Invariants 10–13, 35; Conceptual Architecture §9; Implementation Architecture §6
 
 ## Scope

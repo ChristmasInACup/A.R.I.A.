@@ -1,7 +1,7 @@
 # Delegation & Authority Specification
 
 **Specification ID:** ARIA-SPEC-AUTH-002
-**Status:** Draft
+**Status:** Approved
 **Authority:** Constitution; Invariants 5–7, 31, 38; Conceptual Architecture §3, §7–8; Implementation Architecture §5
 
 ## Scope

@@ -1,7 +1,7 @@
 # Knowledge Lifecycle Specification
 
 **Specification ID:** ARIA-SPEC-KNOW-001
-**Status:** Draft
+**Status:** Approved
 **Authority:** Invariants 10, 12–16; Conceptual Architecture §3, §4, §9; Implementation Architecture §6
 
 ## Scope

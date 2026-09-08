@@ -1,7 +1,7 @@
 # Provenance & Information Trust Specification
 
 **Specification ID:** ARIA-SPEC-KNOW-003
-**Status:** Draft
+**Status:** Approved
 **Authority:** Invariants 12–13, 17–21; Conceptual Architecture §5, §9–10; Implementation Architecture §6, §17
 
 ## Scope

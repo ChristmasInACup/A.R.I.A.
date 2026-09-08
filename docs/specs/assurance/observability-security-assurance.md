@@ -1,7 +1,7 @@
 # Observability & Security Assurance Specification
 
 **Specification ID:** ARIA-SPEC-ASR-002
-**Status:** Draft
+**Status:** Approved
 **Authority:** Invariants 26, 28–32; Conceptual Architecture §6, §12; Implementation Architecture §17–20
 
 ## Scope
