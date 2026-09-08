@@ -1,7 +1,7 @@
 # Authorization & Policy Specification
 
 **Specification ID:** ARIA-SPEC-AUTH-001
-**Status:** Draft
+**Status:** Approved
 **Authority:** Constitution; Invariants 1–9, 25, 27, 31, 38; Conceptual Architecture §3–4; Implementation Architecture §5
 
 ## Scope
