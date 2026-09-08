@@ -9,7 +9,7 @@ public sealed class FirstSliceTests
     [Fact]
     public void Identity_alone_does_not_authorize()
     {
-        var processor = CreateProcessor(AuthorizationDecision.Deny("No authority granted."));
+        var processor = CreateProcessor(false, "No authority granted.");
 
         var result = processor.Process(Request(), "review information");
 
@@ -21,9 +21,7 @@ public sealed class FirstSliceTests
     [Fact]
     public void Unresolved_identity_cannot_become_authorized()
     {
-        var processor = CreateProcessor(
-            AuthorizationDecision.Allow("Would otherwise allow."),
-            IdentityContext.Unresolved());
+        var processor = CreateProcessor(true, "Would otherwise allow.", IdentityContext.Unresolved());
 
         var result = processor.Process(Request(), "review information");
 
@@ -35,7 +33,8 @@ public sealed class FirstSliceTests
     public void Identity_mismatch_is_denied_even_when_authorization_would_allow()
     {
         var processor = CreateProcessor(
-            AuthorizationDecision.Allow("Allowed."),
+            true,
+            "Allowed.",
             IdentityContext.Resolved(new SubjectId("different-subject")));
 
         var result = processor.Process(Request(), "review information");
@@ -47,7 +46,7 @@ public sealed class FirstSliceTests
     [Fact]
     public void Authorized_request_produces_proposal_with_authorized_context()
     {
-        var processor = CreateProcessor(AuthorizationDecision.Allow("Explicitly authorized."));
+        var processor = CreateProcessor(true, "Explicitly authorized.");
 
         var result = processor.Process(Request(), "review information");
 
@@ -64,7 +63,7 @@ public sealed class FirstSliceTests
     {
         var processor = new GovernedRequestProcessor(
             new StubIdentityResolver(IdentityContext.Resolved(new SubjectId("subject-1"))),
-            new StubAuthorizationEvaluator(AuthorizationDecision.Deny("Denied.")),
+            new StubAuthorizationEvaluator(false, "Denied."),
             new ThrowingContextAssembler());
 
         var result = processor.Process(Request(), "review information");
@@ -76,7 +75,11 @@ public sealed class FirstSliceTests
     [Fact]
     public void Denied_authorization_cannot_create_an_authorization_grant()
     {
-        var decision = AuthorizationDecision.Deny("Denied.");
+        var request = new AuthorizationRequest(
+            new SubjectId("subject-1"),
+            new DomainId("domain-1"),
+            "review");
+        var decision = AuthorizationDecision.Deny(request, "Denied.");
 
         Assert.False(decision.TryCreateGrant(out var grant));
         Assert.Null(grant);
@@ -87,7 +90,7 @@ public sealed class FirstSliceTests
     {
         var processor = new GovernedRequestProcessor(
             new StubIdentityResolver(IdentityContext.Resolved(new SubjectId("subject-1"))),
-            new StubAuthorizationEvaluator(AuthorizationDecision.Allow("Allowed.")),
+            new StubAuthorizationEvaluator(true, "Allowed."),
             new FilteringContextAssembler());
 
         var result = processor.Process(Request(), "review information");
@@ -105,7 +108,7 @@ public sealed class FirstSliceTests
         var source = new Dictionary<string, string> { ["purpose"] = "review" };
         var processor = new GovernedRequestProcessor(
             new StubIdentityResolver(IdentityContext.Resolved(new SubjectId("subject-1"))),
-            new StubAuthorizationEvaluator(AuthorizationDecision.Allow("Allowed.")),
+            new StubAuthorizationEvaluator(true, "Allowed."),
             new DictionaryContextAssembler(source));
 
         var result = processor.Process(Request(), "review information");
@@ -119,7 +122,7 @@ public sealed class FirstSliceTests
     {
         var processor = new GovernedRequestProcessor(
             new StubIdentityResolver(IdentityContext.Resolved(new SubjectId("subject-1"))),
-            new StubAuthorizationEvaluator(AuthorizationDecision.Allow("Allowed.")),
+            new StubAuthorizationEvaluator(true, "Allowed."),
             new MismatchedContextAssembler());
 
         Assert.Throws<ArgumentException>(() => processor.Process(Request(), "review information"));
@@ -139,14 +142,15 @@ public sealed class FirstSliceTests
             "review");
 
     private static GovernedRequestProcessor CreateProcessor(
-        AuthorizationDecision authorization,
+        bool isAuthorized,
+        string reason,
         IdentityContext? identity = null)
     {
         var resolvedIdentity = identity ?? IdentityContext.Resolved(new SubjectId("subject-1"));
 
         return new GovernedRequestProcessor(
             new StubIdentityResolver(resolvedIdentity),
-            new StubAuthorizationEvaluator(authorization),
+            new StubAuthorizationEvaluator(isAuthorized, reason),
             new StubContextAssembler());
     }
 
@@ -155,9 +159,12 @@ public sealed class FirstSliceTests
         public IdentityContext Resolve(GovernedRequest request) => identity;
     }
 
-    private sealed class StubAuthorizationEvaluator(AuthorizationDecision decision) : IAuthorizationEvaluator
+    private sealed class StubAuthorizationEvaluator(bool isAuthorized, string reason) : IAuthorizationEvaluator
     {
-        public AuthorizationDecision Evaluate(AuthorizationRequest request) => decision;
+        public AuthorizationDecision Evaluate(AuthorizationRequest request) =>
+            isAuthorized
+                ? AuthorizationDecision.Allow(request, reason)
+                : AuthorizationDecision.Deny(request, reason);
     }
 
     private sealed class StubContextAssembler : IContextAssembler

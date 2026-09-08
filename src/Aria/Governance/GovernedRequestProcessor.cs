@@ -34,7 +34,11 @@ public sealed class GovernedRequestProcessor
             request.Domain,
             request.Purpose);
         var authorization = _authorizationEvaluator.Evaluate(authorizationRequest);
-        authorization.BindTo(authorizationRequest);
+
+        if (!authorization.Request.Equals(authorizationRequest))
+        {
+            return GovernedRequestResult.Deny("The authorization decision was not bound to the evaluated request.");
+        }
 
         if (!authorization.TryCreateGrant(out var grant))
         {

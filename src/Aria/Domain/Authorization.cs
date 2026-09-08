@@ -5,23 +5,38 @@ public sealed record AuthorizationRequest(
     DomainId Domain,
     string Purpose);
 
-public sealed record AuthorizationDecision(bool IsAuthorized, string Reason)
+public sealed record AuthorizationDecision
 {
-    private AuthorizationRequest? Request { get; set; }
-
-    public static AuthorizationDecision Allow(string reason) => new(true, reason);
-
-    public static AuthorizationDecision Deny(string reason) => new(false, reason);
-
-    internal void BindTo(AuthorizationRequest request)
+    private AuthorizationDecision(
+        AuthorizationRequest request,
+        bool isAuthorized,
+        string reason)
     {
         ArgumentNullException.ThrowIfNull(request);
+        ArgumentException.ThrowIfNullOrWhiteSpace(reason);
+
         Request = request;
+        IsAuthorized = isAuthorized;
+        Reason = reason;
     }
+
+    public AuthorizationRequest Request { get; }
+    public bool IsAuthorized { get; }
+    public string Reason { get; }
+
+    public static AuthorizationDecision Allow(
+        AuthorizationRequest request,
+        string reason) =>
+        new(request, true, reason);
+
+    public static AuthorizationDecision Deny(
+        AuthorizationRequest request,
+        string reason) =>
+        new(request, false, reason);
 
     public bool TryCreateGrant(out AuthorizationGrant? grant)
     {
-        if (!IsAuthorized || Request is null)
+        if (!IsAuthorized)
         {
             grant = null;
             return false;
