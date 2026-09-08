@@ -1,7 +1,7 @@
 # Execution Governance Specification
 
 **Specification ID:** ARIA-SPEC-EXEC-003
-**Status:** Draft
+**Status:** Approved
 **Authority:** Invariants 8, 22, 25–26, 28–32; Conceptual Architecture §3, §12; Implementation Architecture §11, §13
 
 ## Scope
