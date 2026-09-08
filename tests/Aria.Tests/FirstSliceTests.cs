@@ -10,9 +10,8 @@ public sealed class FirstSliceTests
     {
         var processor = CreateProcessor(
             new AuthorizationDecision(false, "No authority granted."));
-        var request = Request();
 
-        Assert.Throws<UnauthorizedAccessException>(() => processor.Process(request, "review information"));
+        Assert.Throws<UnauthorizedAccessException>(() => processor.Process(Request(), "review information"));
     }
 
     [Fact]
@@ -50,15 +49,14 @@ public sealed class FirstSliceTests
     }
 
     [Fact]
-    public void Proposal_does_not_change_authorization()
+    public void Authorization_is_evaluated_before_context_is_assembled()
     {
-        var authorization = AuthorizationDecision.Allow("Explicitly authorized.");
-        var processor = CreateProcessor(authorization);
+        var processor = new GovernedRequestProcessor(
+            new StubIdentityResolver(IdentityContext.Resolved(new SubjectId("subject-1"))),
+            new StubAuthorizationEvaluator(AuthorizationDecision.Deny("Denied.")),
+            new ThrowingContextAssembler());
 
-        var proposal = processor.Process(Request(), "request more authority");
-
-        Assert.Equal(authorization, authorization);
-        Assert.Equal("request more authority", proposal.Intent);
+        Assert.Throws<UnauthorizedAccessException>(() => processor.Process(Request(), "review information"));
     }
 
     private static GovernedRequest Request() =>
@@ -100,5 +98,11 @@ public sealed class FirstSliceTests
                 {
                     ["purpose"] = request.Purpose
                 });
+    }
+
+    private sealed class ThrowingContextAssembler : IContextAssembler
+    {
+        public AuthorizedContext Assemble(GovernedRequest request, AuthorizationDecision authorization) =>
+            throw new InvalidOperationException("Context must not be assembled after authorization denial.");
     }
 }
