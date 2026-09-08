@@ -115,6 +115,17 @@ public sealed class FirstSliceTests
     }
 
     [Fact]
+    public void Authorization_grant_cannot_be_reused_for_a_different_request()
+    {
+        var processor = new GovernedRequestProcessor(
+            new StubIdentityResolver(IdentityContext.Resolved(new SubjectId("subject-1"))),
+            new StubAuthorizationEvaluator(AuthorizationDecision.Allow("Allowed.")),
+            new MismatchedContextAssembler());
+
+        Assert.Throws<ArgumentException>(() => processor.Process(Request(), "review information"));
+    }
+
+    [Fact]
     public void Empty_subject_and_domain_ids_are_rejected()
     {
         Assert.Throws<ArgumentException>(() => new SubjectId(""));
@@ -177,6 +188,18 @@ public sealed class FirstSliceTests
     {
         public AuthorizedContext Assemble(GovernedRequest request, AuthorizationGrant authorization) =>
             AuthorizedContext.Create(request, authorization, values);
+    }
+
+    private sealed class MismatchedContextAssembler : IContextAssembler
+    {
+        public AuthorizedContext Assemble(GovernedRequest request, AuthorizationGrant authorization) =>
+            AuthorizedContext.Create(
+                GovernedRequest.Create(
+                    new SubjectId("subject-2"),
+                    request.Domain,
+                    request.Purpose),
+                authorization,
+                new Dictionary<string, string> { ["purpose"] = request.Purpose });
     }
 
     private sealed class ThrowingContextAssembler : IContextAssembler
