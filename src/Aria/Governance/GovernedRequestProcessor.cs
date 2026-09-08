@@ -29,8 +29,12 @@ public sealed class GovernedRequestProcessor
             return GovernedRequestResult.Deny("The request identity could not be resolved and verified.");
         }
 
-        var authorization = _authorizationEvaluator.Evaluate(
-            new AuthorizationRequest(identity.Subject, request.Domain, request.Purpose));
+        var authorizationRequest = new AuthorizationRequest(
+            identity.Subject,
+            request.Domain,
+            request.Purpose);
+        var authorization = _authorizationEvaluator.Evaluate(authorizationRequest);
+        authorization.BindTo(authorizationRequest);
 
         if (!authorization.TryCreateGrant(out var grant))
         {
