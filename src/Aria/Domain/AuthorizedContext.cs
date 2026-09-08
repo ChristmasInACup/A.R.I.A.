@@ -1,10 +1,6 @@
 namespace Aria.Domain;
 
-public sealed record AuthorizedContext(
-    SubjectId Subject,
-    DomainId Domain,
-    string Purpose,
-    IReadOnlyDictionary<string, string> Values)
+public sealed record AuthorizedContext
 {
     private AuthorizedContext(
         SubjectId subject,
@@ -12,14 +8,21 @@ public sealed record AuthorizedContext(
         string purpose,
         IReadOnlyDictionary<string, string> values,
         AuthorizationGrant grant)
-        : this(subject, domain, purpose, values)
     {
+        Subject = subject;
+        Domain = domain;
+        Purpose = purpose;
+        Values = values;
         Grant = grant;
     }
 
+    public SubjectId Subject { get; }
+    public DomainId Domain { get; }
+    public string Purpose { get; }
+    public IReadOnlyDictionary<string, string> Values { get; }
     public AuthorizationGrant Grant { get; }
 
-    internal static AuthorizedContext Create(
+    public static AuthorizedContext Create(
         GovernedRequest request,
         AuthorizationGrant grant,
         IReadOnlyDictionary<string, string> values)
