@@ -1,7 +1,7 @@
 # Capability Contracts Specification
 
 **Specification ID:** ARIA-SPEC-EXEC-002
-**Status:** Draft
+**Status:** Approved
 **Authority:** Invariants 2, 4, 25, 28–29, 33; Conceptual Architecture §6; Implementation Architecture §14
 
 ## Scope
