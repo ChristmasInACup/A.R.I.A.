@@ -14,10 +14,22 @@ public sealed record GovernedRequest(
 
 public readonly record struct SubjectId(string Value)
 {
+    public SubjectId(string value) : this()
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        Value = value;
+    }
+
     public override string ToString() => Value;
 }
 
 public readonly record struct DomainId(string Value)
 {
+    public DomainId(string value) : this()
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(value);
+        Value = value;
+    }
+
     public override string ToString() => Value;
 }
