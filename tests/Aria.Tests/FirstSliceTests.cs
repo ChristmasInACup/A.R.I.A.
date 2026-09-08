@@ -9,10 +9,13 @@ public sealed class FirstSliceTests
     [Fact]
     public void Identity_alone_does_not_authorize()
     {
-        var processor = CreateProcessor(
-            new AuthorizationDecision(false, "No authority granted."));
+        var processor = CreateProcessor(AuthorizationDecision.Deny("No authority granted."));
 
-        Assert.Throws<UnauthorizedAccessException>(() => processor.Process(Request(), "review information"));
+        var result = processor.Process(Request(), "review information");
+
+        Assert.False(result.IsAllowed);
+        Assert.Null(result.Proposal);
+        Assert.Equal("No authority granted.", result.Reason);
     }
 
     [Fact]
@@ -22,7 +25,10 @@ public sealed class FirstSliceTests
             AuthorizationDecision.Allow("Would otherwise allow."),
             IdentityContext.Unresolved());
 
-        Assert.Throws<UnauthorizedAccessException>(() => processor.Process(Request(), "review information"));
+        var result = processor.Process(Request(), "review information");
+
+        Assert.False(result.IsAllowed);
+        Assert.Null(result.Proposal);
     }
 
     [Fact]
@@ -32,21 +38,25 @@ public sealed class FirstSliceTests
             AuthorizationDecision.Allow("Allowed."),
             IdentityContext.Resolved(new SubjectId("different-subject")));
 
-        Assert.Throws<UnauthorizedAccessException>(() => processor.Process(Request(), "review information"));
+        var result = processor.Process(Request(), "review information");
+
+        Assert.False(result.IsAllowed);
+        Assert.Null(result.Proposal);
     }
 
     [Fact]
     public void Authorized_request_produces_proposal_with_authorized_context()
     {
-        var processor = CreateProcessor(
-            AuthorizationDecision.Allow("Explicitly authorized."));
+        var processor = CreateProcessor(AuthorizationDecision.Allow("Explicitly authorized."));
 
-        var proposal = processor.Process(Request(), "review information");
+        var result = processor.Process(Request(), "review information");
 
-        Assert.Equal(new SubjectId("subject-1"), proposal.Subject);
-        Assert.Equal(new DomainId("domain-1"), proposal.Domain);
-        Assert.Equal("review", proposal.Context.Values["purpose"]);
-        Assert.Equal("review information", proposal.Intent);
+        Assert.True(result.IsAllowed);
+        Assert.NotNull(result.Proposal);
+        Assert.Equal(new SubjectId("subject-1"), result.Proposal.Subject);
+        Assert.Equal(new DomainId("domain-1"), result.Proposal.Domain);
+        Assert.Equal("review", result.Proposal.Context.Values["purpose"]);
+        Assert.Equal("review information", result.Proposal.Intent);
     }
 
     [Fact]
@@ -57,7 +67,58 @@ public sealed class FirstSliceTests
             new StubAuthorizationEvaluator(AuthorizationDecision.Deny("Denied.")),
             new ThrowingContextAssembler());
 
-        Assert.Throws<UnauthorizedAccessException>(() => processor.Process(Request(), "review information"));
+        var result = processor.Process(Request(), "review information");
+
+        Assert.False(result.IsAllowed);
+        Assert.Equal("Denied.", result.Reason);
+    }
+
+    [Fact]
+    public void Denied_authorization_cannot_create_an_authorization_grant()
+    {
+        var decision = AuthorizationDecision.Deny("Denied.");
+
+        Assert.False(decision.TryCreateGrant(out var grant));
+        Assert.Null(grant);
+    }
+
+    [Fact]
+    public void Authorized_context_contains_only_minimum_necessary_information()
+    {
+        var processor = new GovernedRequestProcessor(
+            new StubIdentityResolver(IdentityContext.Resolved(new SubjectId("subject-1"))),
+            new StubAuthorizationEvaluator(AuthorizationDecision.Allow("Allowed.")),
+            new FilteringContextAssembler());
+
+        var result = processor.Process(Request(), "review information");
+
+        Assert.True(result.IsAllowed);
+        Assert.NotNull(result.Proposal);
+        Assert.Single(result.Proposal.Context.Values);
+        Assert.Equal("review", result.Proposal.Context.Values["purpose"]);
+        Assert.False(result.Proposal.Context.Values.ContainsKey("unnecessary-secret"));
+    }
+
+    [Fact]
+    public void Authorized_context_is_not_affected_by_source_dictionary_changes()
+    {
+        var source = new Dictionary<string, string> { ["purpose"] = "review" };
+        var processor = new GovernedRequestProcessor(
+            new StubIdentityResolver(IdentityContext.Resolved(new SubjectId("subject-1"))),
+            new StubAuthorizationEvaluator(AuthorizationDecision.Allow("Allowed.")),
+            new DictionaryContextAssembler(source));
+
+        var result = processor.Process(Request(), "review information");
+        source["purpose"] = "tampered";
+
+        Assert.Equal("review", result.Proposal!.Context.Values["purpose"]);
+    }
+
+    [Fact]
+    public void Empty_subject_and_domain_ids_are_rejected()
+    {
+        Assert.Throws<ArgumentException>(() => new SubjectId(""));
+        Assert.Throws<ArgumentException>(() => new DomainId("   "));
     }
 
     private static GovernedRequest Request() =>
@@ -90,20 +151,37 @@ public sealed class FirstSliceTests
 
     private sealed class StubContextAssembler : IContextAssembler
     {
-        public AuthorizedContext Assemble(GovernedRequest request, AuthorizationDecision authorization) =>
-            AuthorizedContext.Create(
-                request.Subject,
-                request.Domain,
-                request.Purpose,
+        public AuthorizedContext Assemble(GovernedRequest request, AuthorizationGrant authorization) =>
+            AuthorizedContext.CreateForTesting(
+                request,
+                authorization,
                 new Dictionary<string, string>
                 {
                     ["purpose"] = request.Purpose
                 });
     }
 
+    private sealed class FilteringContextAssembler : IContextAssembler
+    {
+        public AuthorizedContext Assemble(GovernedRequest request, AuthorizationGrant authorization) =>
+            AuthorizedContext.CreateForTesting(
+                request,
+                authorization,
+                new Dictionary<string, string>
+                {
+                    ["purpose"] = request.Purpose
+                });
+    }
+
+    private sealed class DictionaryContextAssembler(Dictionary<string, string> values) : IContextAssembler
+    {
+        public AuthorizedContext Assemble(GovernedRequest request, AuthorizationGrant authorization) =>
+            AuthorizedContext.CreateForTesting(request, authorization, values);
+    }
+
     private sealed class ThrowingContextAssembler : IContextAssembler
     {
-        public AuthorizedContext Assemble(GovernedRequest request, AuthorizationDecision authorization) =>
+        public AuthorizedContext Assemble(GovernedRequest request, AuthorizationGrant authorization) =>
             throw new InvalidOperationException("Context must not be assembled after authorization denial.");
     }
 }
