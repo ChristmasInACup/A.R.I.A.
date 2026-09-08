@@ -1,7 +1,7 @@
 # Accountability & Audit Specification
 
 **Specification ID:** ARIA-SPEC-ASR-001
-**Status:** Draft
+**Status:** Approved
 **Authority:** Invariants 30, 32; Conceptual Architecture §3, §11–12; Implementation Architecture §16
 
 ## Scope
