@@ -18,7 +18,7 @@ public sealed class GovernedRequestProcessor
         _contextAssembler = contextAssembler;
     }
 
-    public GovernedProposal Process(GovernedRequest request, string intent)
+    public GovernedRequestResult Process(GovernedRequest request, string intent)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentException.ThrowIfNullOrWhiteSpace(intent);
@@ -26,18 +26,30 @@ public sealed class GovernedRequestProcessor
         var identity = _identityResolver.Resolve(request);
         if (!identity.IsResolved || identity.Subject != request.Subject)
         {
-            throw new UnauthorizedAccessException("The request identity could not be resolved and verified.");
+            return GovernedRequestResult.Deny("The request identity could not be resolved and verified.");
         }
 
         var authorization = _authorizationEvaluator.Evaluate(
             new AuthorizationRequest(identity.Subject, request.Domain, request.Purpose));
 
-        if (!authorization.IsAuthorized)
+        if (!authorization.TryCreateGrant(out var grant))
         {
-            throw new UnauthorizedAccessException(authorization.Reason);
+            return GovernedRequestResult.Deny(authorization.Reason);
         }
 
-        var context = _contextAssembler.Assemble(request, authorization);
-        return GovernedProposal.Create(context, intent);
+        var context = _contextAssembler.Assemble(request, grant!);
+        return GovernedRequestResult.Allow(GovernedProposal.Create(context, intent));
     }
+}
+
+public sealed record GovernedRequestResult(
+    bool IsAllowed,
+    string Reason,
+    GovernedProposal? Proposal)
+{
+    public static GovernedRequestResult Allow(GovernedProposal proposal) =>
+        new(true, "Request authorized.", proposal);
+
+    public static GovernedRequestResult Deny(string reason) =>
+        new(false, reason, null);
 }
