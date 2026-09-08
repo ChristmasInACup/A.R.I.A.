@@ -1,6 +1,6 @@
 # A.R.I.A. Capability Model
 
-**Status:** Proposed — Phase 2 Capability Baseline  
+**Status:** Approved — Phase 2 Capability Baseline  
 **Authority:** Derived from the Constitution, Architectural Invariants, approved Conceptual Architecture, Implementation Architecture, and approved Specification Baseline  
 **Last Updated:** 2026-09-07
 

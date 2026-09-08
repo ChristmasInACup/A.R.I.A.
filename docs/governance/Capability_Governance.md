@@ -1,6 +1,6 @@
 # A.R.I.A. Capability Governance
 
-**Status:** Foundational governance artifact — Proposed  
+**Status:** Foundational governance artifact — Approved Baseline  
 **Baseline:** Phase 2 Capability Model  
 **Last Updated:** 2026-09-07
 
