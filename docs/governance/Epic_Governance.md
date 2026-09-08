@@ -1,8 +1,8 @@
 # A.R.I.A. Epic Governance
 
-**Status:** Foundational governance artifact — Proposed  
+**Status:** Foundational governance artifact — Approved Baseline  
 **Baseline:** Phase 3 Epic Model  
-**Last Updated:** 2026-09-07
+**Last Updated:** 2026-09-08
 
 ## Purpose
 
@@ -21,6 +21,12 @@ DERIVED → UNDER REVIEW → APPROVED → BASELINED
 - **Baselined:** Approved epic set is the authoritative input to Story decomposition.
 - **Revised/Retired:** Changed or intentionally removed through governed change.
 
+## Phase 3 Approval Baseline — 2026-09-08
+
+The 12-epic model completed Phase 3 review and was approved by the repository owner through the governed pull-request process in PR #7.
+
+The approved epic baseline is now the authoritative planning input to Story decomposition. It does not authorize implementation, change the approved specifications, or alter higher-level architecture.
+
 ## Governance Rules
 
 1. Every epic must derive from one or more approved capabilities.
@@ -37,7 +43,7 @@ DERIVED → UNDER REVIEW → APPROVED → BASELINED
 
 ## Review Criteria
 
-Before the epic set is baselined, confirm:
+Before an epic set is baselined, confirm:
 
 - every approved capability is represented by one or more epics, or an explicit documented reason exists for not creating one;
 - each epic has a clear primary responsibility;
