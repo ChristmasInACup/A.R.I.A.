@@ -1,7 +1,7 @@
 # Trust, Security & Containment Specification
 
 **Specification ID:** ARIA-SPEC-EVOL-001
-**Status:** Draft
+**Status:** Approved
 **Authority:** Invariants 17–21, 26–29, 31–32, 38–41; Conceptual Architecture §5, §12; Implementation Architecture §17–20
 
 ## Scope
