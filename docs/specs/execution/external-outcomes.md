@@ -1,7 +1,7 @@
 # External Outcomes Specification
 
 **Specification ID:** ARIA-SPEC-EXEC-004
-**Status:** Draft
+**Status:** Approved
 **Authority:** Invariants 23–26; Conceptual Architecture §5, §12; Implementation Architecture §15
 
 ## Scope
