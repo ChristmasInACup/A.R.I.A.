@@ -1,8 +1,8 @@
 # A.R.I.A. Specification Governance
 
-**Status:** Foundational governance artifact — Draft
-**Baseline:** Implementation documentation baseline
-**Last Updated:** 2026-09-06
+**Status:** Foundational governance artifact — Approved Baseline
+**Baseline:** Approved Specification Baseline
+**Last Updated:** 2026-09-07
 
 ## Purpose
 
@@ -18,71 +18,70 @@ DRAFT → UNDER REVIEW → APPROVED → FROZEN
                   SUPERSEDED / RETIRED
 ```
 
-- **Draft:** Proposed normative boundary; not yet approved for implementation as an authoritative specification.
+- **Draft:** Proposed normative boundary; not approved for implementation as authoritative specification.
 - **Under Review:** Explicit review is in progress.
 - **Approved:** Explicitly accepted as the current normative specification.
 - **Frozen:** Approved and protected from casual change; changes require the governed change process.
 - **Superseded:** Replaced by a newer approved specification.
 - **Retired:** No longer applicable and intentionally removed from the active architecture.
 
-No implementation work may treat a Draft specification as approved authority merely because the file exists.
+## Specification Approval Baseline — 2026-09-07
 
-## PR #2 Documentation Baseline Decision
+The 18 foundational architecture specifications completed the Phase 1 specification review and consistency/testability review. ARIA-SPEC-ID-001 also received its documented acceptance-criteria refinement through PR #4, which was merged before this baseline.
 
-PR #2 establishes the repository's **implementation documentation baseline**. That repository-level baseline approval is separate from approval of the individual architecture specifications.
+This change establishes the **Approved Specification Baseline**. Approval is explicit and belongs to the repository owner as the current architectural authority. No additional human reviewer is introduced.
 
-The 18 specifications in this baseline are **intentionally Draft**. They are documented, structurally reviewed, and traceable, but they are **not approved as implementation-authoritative specifications by PR #2**.
+Approval of this baseline means the 18 specifications are the current normative specification layer for implementation planning. It does not authorize implementation to violate the Constitution, Invariants, or approved architecture, and it does not claim that future tests or evidence already exist.
 
-Therefore:
+The approved specifications are:
 
-- the repository owner is the current architectural authority for this documentation baseline;
-- no independent reviewer is assigned solely for ceremony where none has been explicitly designated;
-- each specification remains intentionally Draft;
-- specification-level approval is **Not Applicable** at this stage;
-- the approval record for each specification identifies PR #2 as the documentation-baseline context, not as specification approval;
-- repository-level approval of PR #2 establishes the authoritative documentation/implementation baseline for the repository, subject to the Constitution, Invariants, and frozen architecture;
-- future implementation work must not treat these Draft specifications as approved normative authority until they undergo the explicit specification approval process.
-
-This distinction prevents repository merge status from being mistaken for approval of every normative artifact contained in the repository.
+1. ARIA-SPEC-ID-001 — Identity & Domain
+2. ARIA-SPEC-AUTH-001 — Authorization & Policy
+3. ARIA-SPEC-AUTH-002 — Delegation & Authority
+4. ARIA-SPEC-AUTH-003 — Approval, Autonomy & Human Control
+5. ARIA-SPEC-KNOW-001 — Knowledge Lifecycle
+6. ARIA-SPEC-KNOW-002 — Memory
+7. ARIA-SPEC-KNOW-003 — Provenance & Information Trust
+8. ARIA-SPEC-REAS-001 — Context Assembly
+9. ARIA-SPEC-REAS-002 — Reasoning Coordination
+10. ARIA-SPEC-REAS-003 — Provider & Model Governance
+11. ARIA-SPEC-EXEC-001 — Decision & Proposal
+12. ARIA-SPEC-EXEC-002 — Capability Contracts
+13. ARIA-SPEC-EXEC-003 — Execution Governance
+14. ARIA-SPEC-EXEC-004 — External Outcomes
+15. ARIA-SPEC-ASR-001 — Accountability & Audit
+16. ARIA-SPEC-ASR-002 — Observability & Security Assurance
+17. ARIA-SPEC-EVOL-001 — Trust, Security & Containment
+18. ARIA-SPEC-EVOL-002 — Configuration, Change & Evolution
 
 ## Governance Registry
 
-| ID | Specification | Owner | Reviewer | Status | Approval | Last Updated | Approval Record |
-|---|---|---|---|---|---|---|---|
-| ARIA-SPEC-ID-001 | [Identity & Domain](../specs/identity/identity-domain.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
-| ARIA-SPEC-AUTH-001 | [Authorization & Policy](../specs/authority/authorization-policy.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
-| ARIA-SPEC-AUTH-002 | [Delegation & Authority](../specs/authority/delegation-authority.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
-| ARIA-SPEC-AUTH-003 | [Approval, Autonomy & Human Control](../specs/authority/approval-autonomy-human-control.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
-| ARIA-SPEC-KNOW-001 | [Knowledge Lifecycle](../specs/knowledge/knowledge-lifecycle.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
-| ARIA-SPEC-KNOW-002 | [Memory](../specs/knowledge/memory.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
-| ARIA-SPEC-KNOW-003 | [Provenance & Information Trust](../specs/knowledge/provenance-information-trust.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
-| ARIA-SPEC-REAS-001 | [Context Assembly](../specs/reasoning/context-assembly.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
-| ARIA-SPEC-REAS-002 | [Reasoning Coordination](../specs/reasoning/reasoning-coordination.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
-| ARIA-SPEC-REAS-003 | [Provider & Model Governance](../specs/reasoning/provider-model-governance.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
-| ARIA-SPEC-EXEC-001 | [Decision & Proposal](../specs/execution/decision-proposal.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
-| ARIA-SPEC-EXEC-002 | [Capability Contracts](../specs/execution/capability-contracts.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
-| ARIA-SPEC-EXEC-003 | [Execution Governance](../specs/execution/execution-governance.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
-| ARIA-SPEC-EXEC-004 | [External Outcomes](../specs/execution/external-outcomes.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
-| ARIA-SPEC-ASR-001 | [Accountability & Audit](../specs/assurance/accountability-audit.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
-| ARIA-SPEC-ASR-002 | [Observability & Security Assurance](../specs/assurance/observability-security-assurance.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
-| ARIA-SPEC-EVOL-001 | [Trust, Security & Containment](../specs/evolution/trust-security-containment.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
-| ARIA-SPEC-EVOL-002 | [Configuration, Change & Evolution](../specs/evolution/configuration-change-evolution.md) | Repository Owner (`ChristmasInACup`) | Not assigned — owner is current architectural authority | Intentionally Draft | Not applicable — intentionally draft for this documentation baseline | 2026-09-06 | PR #2 — documentation baseline only |
+All 18 specifications have the following baseline governance state:
+
+| Field | Baseline Value |
+|---|---|
+| Owner | Repository Owner (`ChristmasInACup`) |
+| Approving Authority | Repository Owner — final architectural authority |
+| Status | Approved |
+| Approval Date | 2026-09-07 |
+| Approval Context | This Approved Specification Baseline PR |
+| Conditions | Subordinate to Constitution, Invariants, and approved architecture |
+
+Individual specification files remain the normative definitions of their own scope. This registry is the authoritative record of lifecycle and approval state.
 
 ## Approval Record
 
 For this baseline, approval is intentionally explicit rather than inferred from file creation, implementation activity, or review of unrelated documents.
 
-A specification is approved only when the repository owner or explicitly delegated architectural authority records acceptance through the repository's governed review process.
+The repository owner is the current architectural authority and records acceptance through the governed pull-request process. The final approved revision is the branch revision contained in this baseline pull request; the PR and resulting commit provide the repository evidence for the approval event.
 
-The approval record should identify:
+The approval record identifies:
 
-- specification ID;
-- approved revision or commit;
-- approving authority;
-- review date;
-- material conditions, if any.
-
-**Important:** Approval of PR #2 is a repository-level approval of the documentation/implementation baseline. It is not an approval record for any of the 18 Draft specifications.
+- the 18 specification IDs listed above;
+- their approved revisions in the baseline branch;
+- approving authority: Repository Owner (`ChristmasInACup`);
+- review/approval date: 2026-09-07;
+- material conditions: no conflict with higher-level architecture; future tests/evidence remain obligations rather than existing claims.
 
 ## Change Rules
 
@@ -103,22 +102,28 @@ Specifications may clarify implementation boundaries, but may not:
 
 ## Review Completion Criteria
 
-Before the specification set is approved as a baseline, reviewers must confirm:
+The baseline was reviewed for:
 
-1. Every specification has a single clear primary responsibility.
-2. Every specification has an explicit owner and approval state.
-3. The full set preserves all architectural invariants.
-4. Authority paths are explicit and non-transitive.
-5. Cross-domain information movement is governed.
-6. Context is minimum-necessary and does not become an authority channel.
-7. Reasoning and providers remain non-authoritative.
-8. Approval and autonomy remain bounded by authorization and governance.
-9. Execution is distinct from external outcome.
-10. Failure and uncertainty do not create authority.
-11. Accountability, audit, observability, and security assurance remain distinct responsibilities.
-12. Human disablement and takeover remain available.
-13. Governance-affecting changes remain governed.
-14. No specification silently introduces implementation technology or framework authority.
+1. Clear primary responsibility for each specification.
+2. Explicit ownership and approval state.
+3. Coverage of all architectural invariants.
+4. Explicit, bounded, non-transitive authority paths.
+5. Governed cross-domain information movement.
+6. Minimum-necessary context without authority creation.
+7. Non-authoritative reasoning and providers.
+8. Bounded approval and autonomy.
+9. Separation of execution from external outcome.
+10. Failure and uncertainty semantics that cannot create authority.
+11. Distinct accountability, audit, observability, and security-assurance responsibilities.
+12. Human disablement and takeover.
+13. Governance of architecture-affecting changes.
+14. No silent implementation-technology commitments.
+
+## Traceability and Implementation Boundary
+
+The approved specification layer feeds **Capabilities → Epics → Stories → Tasks → Implementation → Tests → Evidence**. Specifications define what must be true; implementation remains subordinate to them.
+
+Future test and evidence obligations are not claims of completed implementation.
 
 ## Governing Principle
 
