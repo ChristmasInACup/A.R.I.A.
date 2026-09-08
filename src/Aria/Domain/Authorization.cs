@@ -7,23 +7,27 @@ public sealed record AuthorizationRequest(
 
 public sealed record AuthorizationDecision(bool IsAuthorized, string Reason)
 {
+    private AuthorizationRequest? Request { get; set; }
+
     public static AuthorizationDecision Allow(string reason) => new(true, reason);
 
     public static AuthorizationDecision Deny(string reason) => new(false, reason);
 
-    public bool TryCreateGrant(
-        AuthorizationRequest request,
-        out AuthorizationGrant? grant)
+    internal void BindTo(AuthorizationRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
+        Request = request;
+    }
 
-        if (!IsAuthorized)
+    public bool TryCreateGrant(out AuthorizationGrant? grant)
+    {
+        if (!IsAuthorized || Request is null)
         {
             grant = null;
             return false;
         }
 
-        grant = AuthorizationGrant.Create(request, Reason);
+        grant = AuthorizationGrant.Create(Request, Reason);
         return true;
     }
 }
