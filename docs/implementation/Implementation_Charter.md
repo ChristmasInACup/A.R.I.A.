@@ -10,6 +10,8 @@ This charter defines how A.R.I.A. moves from its frozen conceptual architecture 
 
 The charter governs engineering work performed by humans and AI coding agents. It does not replace or modify the Constitution, conceptual architecture, security model, or architectural invariants.
 
+A.R.I.A. uses a controlled autonomous implementation model: once a scope of work is explicitly authorized, an AI engineering agent may execute the defined implementation plan continuously through build, test, diagnosis, repair, validation, and continuation without requiring human approval after every individual task. Human authority remains final at defined governance boundaries and at release acceptance.
+
 ## 2. Governing Hierarchy
 
 Implementation follows this hierarchy:
@@ -232,6 +234,8 @@ They may:
 - propose design improvements
 - create documentation
 - prepare branches and pull requests when authorized
+- execute an authorized sequence of tasks continuously until the authorized scope is complete or a mandatory stop condition is reached
+- build, test, diagnose, fix, retest, validate, record evidence, and continue without requiring per-task human approval
 
 They may not:
 
@@ -245,7 +249,50 @@ They may not:
 - silently expand a story's scope
 - treat model output as authoritative
 - make a provider a security or authorization boundary
-- merge consequential changes without the required human review
+- merge protected release changes without the human authorization required by governance
+- continue past a mandatory stop condition
+
+### Normal Autonomous Loop
+
+For authorized implementation work, the default operating loop is:
+
+```text
+Select authorized work
+    ↓
+Build / Implement
+    ↓
+Test
+    ↓
+Diagnose failures
+    ↓
+Fix
+    ↓
+Retest
+    ↓
+Validate architecture / security / scope
+    ↓
+Record evidence
+    ↓
+Continue to next authorized task
+```
+
+A passing test does not by itself authorize continuation. The agent must also verify that the work remains within the authorized scope and preserves applicable architectural, security, and governance constraints.
+
+### Mandatory Stop Conditions
+
+The agent must stop autonomous execution and request human resolution when:
+
+- the Constitution or an architectural invariant must change
+- a durable architectural decision is required that is not already authorized
+- requirements or scope materially conflict or are ambiguous in a consequential way
+- implementation would weaken security, authorization, isolation, provenance, accountability, or other constitutional guarantees
+- required information or authority is unavailable
+- a test, validation, or evidence requirement cannot be satisfied without changing an approved requirement or invariant
+- the agent discovers a material defect in the governing specifications
+- the work would materially expand the authorized capability beyond its approved scope
+- release readiness requires a human decision
+
+Stopping is a governance behavior, not a failure of the autonomous workflow.
 
 ### Conflict Rule
 
@@ -283,13 +330,13 @@ A story should identify:
 - explicit non-goals
 - definition of done
 
-Stories should be small enough for a reviewer to understand the complete change.
+Stories should be small enough for a reviewer to understand the complete change, while an authorized autonomous implementation run may execute multiple stories sequentially without requiring human approval between them.
 
 Stories implement already-established architectural intent; they must not be used to invent architecture through incremental feature work.
 
 ## 10. Development Workflow
 
-The preferred workflow is:
+The preferred autonomous workflow is:
 
 ```text
 Issue / Need
@@ -304,24 +351,32 @@ Capability
     ↓
 Epic
     ↓
-Story
+Stories / Tasks
     ↓
-Implementation
+Authorized Autonomous Build Loop
     ↓
-Tests
+Build
     ↓
-Security / Architecture Review
+Test
+    ↓
+Diagnose / Fix
+    ↓
+Retest
+    ↓
+Architecture / Security / Scope Validation
     ↓
 Evidence
     ↓
-Pull Request
+Milestone Validation
     ↓
-Human Review
+Full System Validation
     ↓
-Merge
+Final Human Review
+    ↓
+Human Acceptance / Release Authorization
 ```
 
-AI agents may accelerate the workflow, but they do not remove the governance steps.
+AI agents may execute the implementation loop continuously within the authorized scope. Human review is concentrated at meaningful governance and release boundaries rather than required after every individual task.
 
 ## 11. Pull Request Expectations
 
@@ -336,8 +391,12 @@ A pull request should make it possible to determine:
 - what tests demonstrate correctness
 - what evidence supports the relevant guarantees
 - what remains intentionally out of scope
+- what autonomous implementation scope was executed, where applicable
+- what validation was performed before the pull request was presented for human review
 
-Prefer small, reviewable pull requests over large batches of unrelated work.
+A pull request may represent a task, story, milestone, or other coherent authorized unit of work. It does not need to correspond one-to-one with an individual task.
+
+Prefer coherent, reviewable pull requests over arbitrary task-sized commits or batches of unrelated work.
 
 ## 12. Architectural Traceability
 
@@ -394,6 +453,10 @@ Examples include authorization scope, delegation limits, provenance preservation
 
 Verify that the specific behavior authorized by a story works as intended, including relevant permitted and forbidden cases.
 
+### Autonomous Regression Requirement
+
+When an autonomous implementation run fixes a failing test or changes behavior in response to a failure, the agent must retest the affected behavior and run the relevant regression suite before continuing. Tests must not be removed, weakened, skipped, or made less meaningful solely to obtain a passing result.
+
 Evidence should make it possible to demonstrate that important architectural guarantees remain satisfied rather than relying only on individual feature tests.
 
 ## 14. Failure and Degraded Operation
@@ -424,9 +487,27 @@ A story is complete only when:
 - [ ] The code is readable and appropriately modular.
 - [ ] Relevant evidence has been established where architectural guarantees require it.
 - [ ] The pull request clearly explains the change.
-- [ ] Required human review is complete.
 
-## 16. Review Heuristics
+Human approval is **not** a per-story Definition of Done requirement. Human review and acceptance occur at the governance, milestone, and release boundaries defined by this charter and the repository's protection rules.
+
+## 16. Human Authority and Review Boundaries
+
+The human owner remains the final authority over A.R.I.A.
+
+Human review is required when the autonomous implementation process reaches a governance boundary, including:
+
+1. constitutional or invariant changes
+2. durable architectural decisions not already authorized
+3. material changes to requirements or scope
+4. unresolved security or authority conflicts
+5. milestone or full-system validation requiring an acceptance decision
+6. final release readiness and acceptance
+
+The purpose of autonomous execution is to remove unnecessary approval latency, not to remove human authority.
+
+The agent may prepare and validate changes continuously, but it does not become the final authority merely because it can implement or validate them.
+
+## 17. Review Heuristics
 
 Reviewers should ask:
 
@@ -442,6 +523,9 @@ Reviewers should ask:
 10. Did the implementation introduce architectural knowledge that needs documentation?
 11. Does the user experience minimize unnecessary cognitive burden?
 12. Are we making the user operate A.R.I.A., or is A.R.I.A. operating for the user?
+13. Did autonomous execution remain within its authorized scope?
+14. Were failures fixed without weakening tests or governance?
+15. Is the evidence sufficient to support milestone or release acceptance?
 
 A useful component sanity check is:
 
@@ -449,7 +533,7 @@ A useful component sanity check is:
 
 If not, the design should be reconsidered before merge.
 
-## 17. Evolution Rule
+## 18. Evolution Rule
 
 Implementation may evolve continuously while the foundational architecture remains stable.
 
@@ -457,6 +541,6 @@ New technology, providers, modules, organizational requirements, and capabilitie
 
 When implementation pressure conflicts with an invariant, the correct response is architectural review—not silent erosion of the boundary.
 
-## 18. Guiding Principle
+## 19. Guiding Principle
 
-> **Build the smallest thing that proves the architecture, make the code understandable, make unsafe behavior difficult, minimize the cognitive burden on the human, and preserve the ability to change what we have built.**
+> **Build the smallest thing that proves the architecture, let authorized automation build and validate continuously, make the code understandable, make unsafe behavior difficult, minimize the cognitive burden on the human, and preserve the human's final authority to accept or reject the result.**
