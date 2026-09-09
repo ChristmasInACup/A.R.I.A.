@@ -17,6 +17,10 @@ The implementation layer is not yet a technology selection. It defines logical r
 - [Implementation Charter](Implementation_Charter.md) — engineering principles, AI engineering contract, planning hierarchy, workflow, testing, evidence, and definition of done.
 - [Autonomous Implementation Protocol](Autonomous_Implementation_Protocol.md) — controlled autonomous build → test → fix → continue operating mode, stop conditions, milestone gates, testing, evidence, and final human release authority.
 
+### Planning
+
+- [Autonomous Implementation Backlog](../planning/Implementation_Backlog.md) — dependency-ordered Epics → Stories → Tasks, milestone exit criteria, acceptance criteria, tests, traceability, and autonomous execution rules.
+
 ### Logical Architecture
 
 - [Implementation Architecture](Implementation_Architecture.md) — logical component organization and architectural boundaries.
