@@ -48,6 +48,7 @@ The complete documentation map is available in [Documentation](docs/README.md).
 - [Data Architecture](docs/implementation/Data_Architecture.md)
 - [Interface Architecture](docs/implementation/Interface_Architecture.md)
 - [Deployment Architecture](docs/implementation/Deployment_Architecture.md)
+- [First Reference Slice](docs/implementation/First_Reference_Slice.md)
 
 ### Specifications and Governance
 
@@ -102,10 +103,12 @@ Each layer has a distinct purpose. Lower layers may implement or clarify higher 
 | Conceptual Architecture | FROZEN — v1.0 |
 | Security Architecture | FROZEN — v1.0 |
 | Governance Model | FROZEN — v1.0 |
-| Implementation Architecture | ESTABLISHED — DRAFT / IMPLEMENTATION PHASE |
-| Architecture Specifications | DRAFT — APPROVAL PENDING |
-| Capabilities / Epics / Stories | NOT YET BASELINED |
-| Production Implementation | NOT YET STARTED |
+| Implementation Architecture | ESTABLISHED — IMPLEMENTATION PHASE |
+| Architecture Specifications | BASELINED |
+| Capabilities / Epics / Stories / Tasks | BASELINED — AUTONOMOUS IMPLEMENTATION PLAN |
+| Initial Technology Decision | ACCEPTED — C# / xUnit |
+| First Reference Slice | READY — M1 |
+| Production Implementation | STARTING — FOUNDATION / REFERENCE SLICE |
 
 ## Development Philosophy
 
