@@ -114,6 +114,7 @@ public sealed class EffectiveAuthorityEvaluator : IAuthorizationEvaluator
             return false;
 
         if (!delegation.IsActiveAt(now)
+            || delegation.HasUnsupportedConditions
             || delegation.Recipient != authority.Holder
             || delegation.Domain != requiredDomain
             || delegation.Purpose != requiredPurpose
@@ -144,6 +145,6 @@ public sealed class EffectiveAuthorityEvaluator : IAuthorizationEvaluator
     private bool SourceDelegationAllowsFurtherDelegation(AuthorityRecord source, DateTimeOffset now)
     {
         var matches = _delegations.Where(candidate => candidate.Id == source.DelegationId).ToArray();
-        return matches.Length == 1 && matches[0].IsActiveAt(now) && matches[0].AllowsFurtherDelegation;
+        return matches.Length == 1 && matches[0].IsActiveAt(now) && !matches[0].HasUnsupportedConditions && matches[0].AllowsFurtherDelegation;
     }
 }
