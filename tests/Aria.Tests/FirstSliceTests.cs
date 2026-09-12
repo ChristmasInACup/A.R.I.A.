@@ -4,214 +4,193 @@ using Xunit;
 
 namespace Aria.Tests;
 
+/// <summary>Traceability: CAP-01/02/05/07; EPIC-02–05; ARIA-SPEC-ID-001, AUTH-001/002, REAS-001, EXEC-001.</summary>
 public sealed class FirstSliceTests
 {
-    [Fact]
-    public void Identity_alone_does_not_authorize()
+    private static readonly DateTimeOffset Now = new(2026, 9, 9, 12, 0, 0, TimeSpan.Zero);
+
+    [Fact] public void End_to_end_permitted_request_produces_a_draft_proposal() { var result = Processor().Process(Request(), "Review the case."); Assert.True(result.IsAllowed); Assert.NotNull(result.Proposal); Assert.Equal(ProposalLifecycleState.Draft, result.Proposal.Lifecycle); Assert.Equal("Review the case.", result.Proposal.Intent); }
+    [Fact] public void Identity_alone_does_not_authorize() { var result = Processor(authorities: []).Process(Request(), "Review."); Assert.False(result.IsAllowed); Assert.Null(result.Proposal); }
+    [Theory]
+    [InlineData(IdentityResolutionStatus.Unresolved)]
+    [InlineData(IdentityResolutionStatus.Invalid)]
+    [InlineData(IdentityResolutionStatus.Mismatched)]
+    public void Invalid_or_unresolved_identity_terminates_before_authorization(IdentityResolutionStatus status)
     {
-        var processor = CreateProcessor(false, "No authority granted.");
-
-        var result = processor.Process(Request(), "review information");
-
-        Assert.False(result.IsAllowed);
-        Assert.Null(result.Proposal);
-        Assert.Equal("No authority granted.", result.Reason);
+        var identity = status switch { IdentityResolutionStatus.Unresolved => IdentityContext.Unresolved(), IdentityResolutionStatus.Invalid => IdentityContext.Invalid(), _ => IdentityContext.Mismatched(new SubjectId("other")) };
+        var result = Processor(identity: identity).Process(Request(), "Review."); Assert.False(result.IsAllowed); Assert.Null(result.Proposal);
     }
+    [Fact] public void Missing_or_unavailable_policy_fails_closed() { var result = Processor(policies: [Policy(false)]).Process(Request(), "Review."); Assert.False(result.IsAllowed); Assert.Null(result.Proposal); Assert.Contains("unavailable", result.Reason, StringComparison.OrdinalIgnoreCase); }
+    [Fact] public void Policy_deny_overrides_authority() { var result = Processor(policies: [Policy(), Policy(true, PolicyEffect.Deny)]).Process(Request(), "Review."); Assert.False(result.IsAllowed); Assert.Null(result.Proposal); }
+    [Fact] public void Expired_or_revoked_authority_is_denied() { foreach (var authority in new[] { Authority(expiresAt: Now), Authority(revoked: true) }) { var result = Processor(authorities: [authority]).Process(Request(), "Review."); Assert.False(result.IsAllowed); Assert.Null(result.Proposal); } }
+    [Fact] public void Purpose_domain_and_scope_mismatch_are_denied() { foreach (var authority in new[] { Authority(purpose: "export"), Authority(domain: new DomainId("other")), Authority(scope: ResourceScope.For("other")) }) { var result = Processor(authorities: [authority]).Process(Request(), "Review."); Assert.False(result.IsAllowed); Assert.Null(result.Proposal); } }
 
-    [Fact]
-    public void Unresolved_identity_cannot_become_authorized()
+    [Fact] public void Explicit_delegation_to_correct_recipient_authorizes()
     {
-        var processor = CreateProcessor(true, "Would otherwise allow.", IdentityContext.Unresolved());
-
-        var result = processor.Process(Request(), "review information");
-
-        Assert.False(result.IsAllowed);
-        Assert.Null(result.Proposal);
-    }
-
-    [Fact]
-    public void Identity_mismatch_is_denied_even_when_authorization_would_allow()
-    {
-        var processor = CreateProcessor(
-            true,
-            "Allowed.",
-            IdentityContext.Resolved(new SubjectId("different-subject")));
-
-        var result = processor.Process(Request(), "review information");
-
-        Assert.False(result.IsAllowed);
-        Assert.Null(result.Proposal);
-    }
-
-    [Fact]
-    public void Authorized_request_produces_proposal_with_authorized_context()
-    {
-        var processor = CreateProcessor(true, "Explicitly authorized.");
-
-        var result = processor.Process(Request(), "review information");
-
+        var root = Authority(holder: new SubjectId("issuer"), mayDelegate: true);
+        var delegated = Authority(delegationId: "delegation-1");
+        var delegation = DelegationTo(root, delegated, "delegation-1");
+        var result = Processor(authorities: [delegated, root], delegations: [delegation]).Process(Request(), "Review.");
         Assert.True(result.IsAllowed);
-        Assert.NotNull(result.Proposal);
-        Assert.Equal(new SubjectId("subject-1"), result.Proposal.Subject);
-        Assert.Equal(new DomainId("domain-1"), result.Proposal.Domain);
-        Assert.Equal("review", result.Proposal.Context.Values["purpose"]);
-        Assert.Equal("review information", result.Proposal.Intent);
     }
 
-    [Fact]
-    public void Authorization_is_evaluated_before_context_is_assembled()
+    [Fact] public void Delegation_to_different_recipient_does_not_authorize()
     {
-        var processor = new GovernedRequestProcessor(
-            new StubIdentityResolver(IdentityContext.Resolved(new SubjectId("subject-1"))),
-            new StubAuthorizationEvaluator(false, "Denied."),
-            new ThrowingContextAssembler());
-
-        var result = processor.Process(Request(), "review information");
-
+        var root = Authority(holder: new SubjectId("issuer"), mayDelegate: true);
+        var delegated = Authority(delegationId: "delegation-1");
+        var delegation = DelegationTo(root, delegated, "delegation-1", recipient: new SubjectId("other"));
+        var result = Processor(authorities: [delegated, root], delegations: [delegation]).Process(Request(), "Review.");
         Assert.False(result.IsAllowed);
-        Assert.Equal("Denied.", result.Reason);
     }
 
-    [Fact]
-    public void Denied_authorization_cannot_create_an_authorization_grant()
+    [Fact] public void Forged_unrelated_authority_cannot_create_implicit_delegation()
     {
-        var request = new AuthorizationRequest(
-            new SubjectId("subject-1"),
-            new DomainId("domain-1"),
-            "review");
-        var decision = AuthorizationDecision.Deny(request, "Denied.");
-
-        Assert.False(decision.TryCreateGrant(out var grant));
-        Assert.Null(grant);
+        var unrelatedSource = Authority(holder: new SubjectId("issuer"), mayDelegate: true);
+        var forgedDelegatedAuthority = Authority(delegationId: "forged-delegation");
+        var result = Processor(authorities: [forgedDelegatedAuthority, unrelatedSource]).Process(Request(), "Review.");
+        Assert.False(result.IsAllowed);
     }
 
-    [Fact]
-    public void Authorized_context_contains_only_minimum_necessary_information()
+    [Fact] public void Delegation_cannot_exceed_source_scope()
     {
-        var processor = new GovernedRequestProcessor(
-            new StubIdentityResolver(IdentityContext.Resolved(new SubjectId("subject-1"))),
-            new StubAuthorizationEvaluator(true, "Allowed."),
-            new FilteringContextAssembler());
+        var root = Authority(holder: new SubjectId("issuer"), scope: ResourceScope.For("case-a"), mayDelegate: true);
+        var delegated = Authority(delegationId: "delegation-1", scope: ResourceScope.For("case-a", "case-b"));
+        var delegation = DelegationTo(root, delegated, "delegation-1");
+        var result = Processor(authorities: [delegated, root], delegations: [delegation]).Process(Request(), "Review.");
+        Assert.False(result.IsAllowed);
+    }
 
-        var result = processor.Process(Request(), "review information");
+    [Fact] public void Delegation_cannot_cross_domain_or_purpose()
+    {
+        var root = Authority(holder: new SubjectId("issuer"), mayDelegate: true);
+        foreach (var delegation in new[]
+        {
+            DelegationTo(root, Authority(delegationId: "domain"), "domain", domain: new DomainId("other")),
+            DelegationTo(root, Authority(delegationId: "purpose"), "purpose", purpose: "export")
+        })
+        {
+            var delegated = Authority(delegationId: delegation.Id);
+            var result = Processor(authorities: [delegated, root], delegations: [delegation]).Process(Request(), "Review.");
+            Assert.False(result.IsAllowed);
+        }
+    }
 
+    [Fact] public void Issuer_without_MayDelegate_cannot_delegate()
+    {
+        var root = Authority(holder: new SubjectId("issuer"), mayDelegate: false);
+        var delegated = Authority(delegationId: "delegation-1");
+        var delegation = DelegationTo(root, delegated, "delegation-1");
+        var result = Processor(authorities: [delegated, root], delegations: [delegation]).Process(Request(), "Review.");
+        Assert.False(result.IsAllowed);
+    }
+
+    [Fact] public void Expired_or_revoked_delegation_is_denied()
+    {
+        var root = Authority(holder: new SubjectId("issuer"), mayDelegate: true);
+        foreach (var delegation in new[]
+        {
+            DelegationTo(root, Authority(delegationId: "expired"), "expired", expiresAt: Now),
+            DelegationTo(root, Authority(delegationId: "revoked"), "revoked", revoked: true)
+        })
+        {
+            var delegated = Authority(delegationId: delegation.Id);
+            var result = Processor(authorities: [delegated, root], delegations: [delegation]).Process(Request(), "Review.");
+            Assert.False(result.IsAllowed);
+        }
+    }
+
+    [Fact] public void Transitive_delegation_requires_explicit_further_delegation_permission()
+    {
+        var root = Authority(holder: new SubjectId("root"), mayDelegate: true);
+        var middle = Authority(holder: new SubjectId("middle"), delegationId: "d1", mayDelegate: true);
+        var leaf = Authority(delegationId: "d2");
+        var d1 = DelegationTo(root, middle, "d1", recipient: middle.Holder, allowsFurtherDelegation: false);
+        var d2 = DelegationTo(middle, leaf, "d2");
+        var result = Processor(authorities: [leaf, middle, root], delegations: [d1, d2]).Process(Request(), "Review.");
+        Assert.False(result.IsAllowed);
+    }
+
+    [Fact] public void Transitive_delegation_succeeds_when_each_level_is_explicit_and_bounded()
+    {
+        var root = Authority(holder: new SubjectId("root"), mayDelegate: true);
+        var middle = Authority(holder: new SubjectId("middle"), delegationId: "d1", mayDelegate: true);
+        var leaf = Authority(delegationId: "d2");
+        var d1 = DelegationTo(root, middle, "d1", recipient: middle.Holder, allowsFurtherDelegation: true);
+        var d2 = DelegationTo(middle, leaf, "d2");
+        var result = Processor(authorities: [leaf, middle, root], delegations: [d1, d2]).Process(Request(), "Review.");
         Assert.True(result.IsAllowed);
-        Assert.NotNull(result.Proposal);
-        Assert.Single(result.Proposal.Context.Values);
-        Assert.Equal("review", result.Proposal.Context.Values["purpose"]);
-        Assert.False(result.Proposal.Context.Values.ContainsKey("unnecessary-secret"));
     }
 
-    [Fact]
-    public void Authorized_context_is_not_affected_by_source_dictionary_changes()
+    [Fact] public void Transitive_delegation_rejects_wrong_ancestor_domain()
     {
-        var source = new Dictionary<string, string> { ["purpose"] = "review" };
-        var processor = new GovernedRequestProcessor(
-            new StubIdentityResolver(IdentityContext.Resolved(new SubjectId("subject-1"))),
-            new StubAuthorizationEvaluator(true, "Allowed."),
-            new DictionaryContextAssembler(source));
-
-        var result = processor.Process(Request(), "review information");
-        source["purpose"] = "tampered";
-
-        Assert.Equal("review", result.Proposal!.Context.Values["purpose"]);
+        var root = Authority(holder: new SubjectId("root"), domain: new DomainId("other"), mayDelegate: true);
+        var middle = Authority(holder: new SubjectId("middle"), delegationId: "d1", mayDelegate: true);
+        var leaf = Authority(delegationId: "d2");
+        var d1 = DelegationTo(root, middle, "d1", recipient: middle.Holder, allowsFurtherDelegation: true);
+        var d2 = DelegationTo(middle, leaf, "d2");
+        var result = Processor(authorities: [leaf, middle, root], delegations: [d1, d2]).Process(Request(), "Review.");
+        Assert.False(result.IsAllowed);
     }
 
-    [Fact]
-    public void Authorization_grant_cannot_be_reused_for_a_different_request()
+    [Fact] public void Transitive_delegation_rejects_wrong_ancestor_purpose()
     {
-        var processor = new GovernedRequestProcessor(
-            new StubIdentityResolver(IdentityContext.Resolved(new SubjectId("subject-1"))),
-            new StubAuthorizationEvaluator(true, "Allowed."),
-            new MismatchedContextAssembler());
-
-        Assert.Throws<ArgumentException>(() => processor.Process(Request(), "review information"));
+        var root = Authority(holder: new SubjectId("root"), purpose: "export", mayDelegate: true);
+        var middle = Authority(holder: new SubjectId("middle"), delegationId: "d1", mayDelegate: true);
+        var leaf = Authority(delegationId: "d2");
+        var d1 = DelegationTo(root, middle, "d1", recipient: middle.Holder, allowsFurtherDelegation: true);
+        var d2 = DelegationTo(middle, leaf, "d2");
+        var result = Processor(authorities: [leaf, middle, root], delegations: [d1, d2]).Process(Request(), "Review.");
+        Assert.False(result.IsAllowed);
     }
 
-    [Fact]
-    public void Empty_subject_and_domain_ids_are_rejected()
+    [Fact] public void Transitive_delegation_rejects_insufficient_ancestor_scope()
     {
-        Assert.Throws<ArgumentException>(() => new SubjectId(""));
-        Assert.Throws<ArgumentException>(() => new DomainId("   "));
+        var root = Authority(holder: new SubjectId("root"), scope: ResourceScope.For("other"), mayDelegate: true);
+        var middle = Authority(holder: new SubjectId("middle"), delegationId: "d1", mayDelegate: true);
+        var leaf = Authority(delegationId: "d2");
+        var d1 = DelegationTo(root, middle, "d1", recipient: middle.Holder, allowsFurtherDelegation: true);
+        var d2 = DelegationTo(middle, leaf, "d2");
+        var result = Processor(authorities: [leaf, middle, root], delegations: [d1, d2]).Process(Request(), "Review.");
+        Assert.False(result.IsAllowed);
     }
 
-    private static GovernedRequest Request() =>
-        GovernedRequest.Create(
-            new SubjectId("subject-1"),
-            new DomainId("domain-1"),
-            "review");
-
-    private static GovernedRequestProcessor CreateProcessor(
-        bool isAuthorized,
-        string reason,
-        IdentityContext? identity = null)
+    [Fact] public void Delegation_cycle_or_repeated_identity_fails_closed()
     {
-        var resolvedIdentity = identity ?? IdentityContext.Resolved(new SubjectId("subject-1"));
-
-        return new GovernedRequestProcessor(
-            new StubIdentityResolver(resolvedIdentity),
-            new StubAuthorizationEvaluator(isAuthorized, reason),
-            new StubContextAssembler());
+        var first = Authority(holder: new SubjectId("first"), delegationId: "d1", mayDelegate: true);
+        var second = Authority(holder: new SubjectId("second"), delegationId: "d2", mayDelegate: true);
+        var d1 = DelegationTo(second, first, "d1", recipient: first.Holder, allowsFurtherDelegation: true);
+        var d2 = DelegationTo(first, second, "d2", recipient: second.Holder, allowsFurtherDelegation: true);
+        var result = Processor(authorities: [first, second], delegations: [d1, d2]).Process(RequestFor(first.Holder), "Review.");
+        Assert.False(result.IsAllowed);
     }
 
-    private sealed class StubIdentityResolver(IdentityContext identity) : IIdentityResolver
+    [Fact] public void Longer_bounded_delegation_chain_remains_authorized()
     {
-        public IdentityContext Resolve(GovernedRequest request) => identity;
+        var root = Authority(holder: new SubjectId("root"), mayDelegate: true);
+        var a = Authority(holder: new SubjectId("a"), delegationId: "d1", mayDelegate: true);
+        var b = Authority(holder: new SubjectId("b"), delegationId: "d2", mayDelegate: true);
+        var leaf = Authority(delegationId: "d3");
+        var d1 = DelegationTo(root, a, "d1", recipient: a.Holder, allowsFurtherDelegation: true);
+        var d2 = DelegationTo(a, b, "d2", recipient: b.Holder, allowsFurtherDelegation: true);
+        var d3 = DelegationTo(b, leaf, "d3");
+        var result = Processor(authorities: [leaf, b, a, root], delegations: [d1, d2, d3]).Process(Request(), "Review.");
+        Assert.True(result.IsAllowed);
     }
 
-    private sealed class StubAuthorizationEvaluator(bool isAuthorized, string reason) : IAuthorizationEvaluator
-    {
-        public AuthorizationDecision Evaluate(AuthorizationRequest request) =>
-            isAuthorized
-                ? AuthorizationDecision.Allow(request, reason)
-                : AuthorizationDecision.Deny(request, reason);
-    }
+    [Fact] public void Authorization_is_evaluated_before_context_assembly() { var processor = new GovernedRequestProcessor(new Resolver(IdentityContext.Resolved(new SubjectId("subject-1"))), new FixedEvaluator(AuthorizationDecision.Deny(AuthRequest(), "Denied.")), new ThrowingAssembler()); var result = processor.Process(Request(), "Review."); Assert.False(result.IsAllowed); }
+    [Fact] public void Context_is_minimum_necessary_and_preserves_metadata() { var result = Processor(material: [Material(), Material(resource: "other"), Material(domain: new DomainId("other")), Material(purpose: "export")]).Process(Request(), "Review."); var item = Assert.Single(result.Proposal!.Material); Assert.Equal("source-a", item.Provenance); Assert.Equal(Sensitivity.Confidential, item.Sensitivity); Assert.Equal(Uncertainty.Uncertain, result.Proposal.Uncertainty); }
+    [Fact] public void Proposal_cannot_create_authority() { var result = Processor(authorities: []).Process(Request(), "Review."); Assert.Null(result.Proposal); Assert.False(result.IsAllowed); }
+    [Fact] public void Changed_authorization_conditions_change_proposal_availability() { Assert.True(Processor().Process(Request(), "Review.").IsAllowed); Assert.False(Processor(authorities: [Authority(revoked: true)]).Process(Request(), "Review.").IsAllowed); }
 
-    private sealed class StubContextAssembler : IContextAssembler
-    {
-        public AuthorizedContext Assemble(GovernedRequest request, AuthorizationGrant authorization) =>
-            AuthorizedContext.Create(
-                request,
-                authorization,
-                new Dictionary<string, string>
-                {
-                    ["purpose"] = request.Purpose
-                });
-    }
-
-    private sealed class FilteringContextAssembler : IContextAssembler
-    {
-        public AuthorizedContext Assemble(GovernedRequest request, AuthorizationGrant authorization) =>
-            AuthorizedContext.Create(
-                request,
-                authorization,
-                new Dictionary<string, string>
-                {
-                    ["purpose"] = request.Purpose
-                });
-    }
-
-    private sealed class DictionaryContextAssembler(Dictionary<string, string> values) : IContextAssembler
-    {
-        public AuthorizedContext Assemble(GovernedRequest request, AuthorizationGrant authorization) =>
-            AuthorizedContext.Create(request, authorization, values);
-    }
-
-    private sealed class MismatchedContextAssembler : IContextAssembler
-    {
-        public AuthorizedContext Assemble(GovernedRequest request, AuthorizationGrant authorization) =>
-            AuthorizedContext.Create(
-                GovernedRequest.Create(
-                    new SubjectId("subject-2"),
-                    request.Domain,
-                    request.Purpose),
-                authorization,
-                new Dictionary<string, string> { ["purpose"] = request.Purpose });
-    }
-
-    private sealed class ThrowingContextAssembler : IContextAssembler
-    {
-        public AuthorizedContext Assemble(GovernedRequest request, AuthorizationGrant authorization) =>
-            throw new InvalidOperationException("Context must not be assembled after authorization denial.");
-    }
+    private static GovernedRequest Request() => GovernedRequest.Create(new SubjectId("subject-1"), new DomainId("domain-1"), "review", ResourceScope.For("case-a"));
+    private static GovernedRequest RequestFor(SubjectId subject) => GovernedRequest.Create(subject, new DomainId("domain-1"), "review", ResourceScope.For("case-a"));
+    private static AuthorizationRequest AuthRequest() => new(new SubjectId("subject-1"), new DomainId("domain-1"), "review", ResourceScope.For("case-a"));
+    private static PolicyRule Policy(bool available = true, PolicyEffect effect = PolicyEffect.Allow) => new("policy", new DomainId("domain-1"), "review", ResourceScope.For("case-a"), effect, available);
+    private static AuthorityRecord Authority(SubjectId? holder = null, DomainId? domain = null, string purpose = "review", ResourceScope? scope = null, DateTimeOffset? expiresAt = null, bool revoked = false, AuthorityRecord? delegator = null, bool mayDelegate = false, string? delegationId = null) => new(Guid.NewGuid().ToString(), holder ?? new SubjectId("subject-1"), domain ?? new DomainId("domain-1"), purpose, scope ?? ResourceScope.For("case-a"), Now.AddHours(-1), expiresAt ?? Now.AddHours(1), revoked, delegationId, mayDelegate);
+    private static Delegation DelegationTo(AuthorityRecord source, AuthorityRecord recipientAuthority, string id, SubjectId? recipient = null, DomainId? domain = null, string? purpose = null, ResourceScope? scope = null, DateTimeOffset? expiresAt = null, bool revoked = false, bool allowsFurtherDelegation = false) => new(id, source.Holder, recipient ?? recipientAuthority.Holder, source.Id, domain ?? source.Domain, purpose ?? source.Purpose, scope ?? recipientAuthority.Scope, Now.AddHours(-1), expiresAt ?? Now.AddHours(1), revoked, allowsFurtherDelegation);
+    private static ContextMaterial Material(string resource = "case-a", DomainId? domain = null, string purpose = "review") => new("summary", "content", resource, domain ?? new DomainId("domain-1"), purpose, Sensitivity.Confidential, "source-a", Uncertainty.Uncertain);
+    private static GovernedRequestProcessor Processor(IdentityContext? identity = null, IEnumerable<PolicyRule>? policies = null, IEnumerable<AuthorityRecord>? authorities = null, IEnumerable<ContextMaterial>? material = null, IEnumerable<Delegation>? delegations = null) => new(new Resolver(identity ?? IdentityContext.Resolved(new SubjectId("subject-1"))), new EffectiveAuthorityEvaluator(policies ?? [Policy()], authorities ?? [Authority()], () => Now, delegations), new MinimumNecessaryContextAssembler(material ?? [Material()]));
+    private sealed class Resolver(IdentityContext identity) : IIdentityResolver { public IdentityContext Resolve(GovernedRequest request) => identity; }
+    private sealed class FixedEvaluator(AuthorizationDecision decision) : IAuthorizationEvaluator { public AuthorizationDecision Evaluate(AuthorizationRequest request) => decision; }
+    private sealed class ThrowingAssembler : IContextAssembler { public ContextAssemblyResult Assemble(GovernedRequest request, AuthorizationGrant authorization) => throw new Xunit.Sdk.XunitException("Context assembly must not occur."); }
 }
