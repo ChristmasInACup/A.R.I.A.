@@ -46,8 +46,8 @@ public sealed class FirstSliceTests
     [Fact] public void Forged_unrelated_authority_cannot_create_implicit_delegation()
     {
         var unrelatedSource = Authority(holder: new SubjectId("issuer"), mayDelegate: true);
-        var delegated = Authority(delegationId: null);
-        var result = Processor(authorities: [delegated, unrelatedSource]).Process(Request(), "Review.");
+        var forgedDelegatedAuthority = Authority(delegationId: "forged-delegation");
+        var result = Processor(authorities: [forgedDelegatedAuthority, unrelatedSource]).Process(Request(), "Review.");
         Assert.False(result.IsAllowed);
     }
 
@@ -182,11 +182,11 @@ public sealed class FirstSliceTests
     [Fact] public void Proposal_cannot_create_authority() { var result = Processor(authorities: []).Process(Request(), "Review."); Assert.Null(result.Proposal); Assert.False(result.IsAllowed); }
     [Fact] public void Changed_authorization_conditions_change_proposal_availability() { Assert.True(Processor().Process(Request(), "Review.").IsAllowed); Assert.False(Processor(authorities: [Authority(revoked: true)]).Process(Request(), "Review.").IsAllowed); }
 
-    private static GovernedRequest Request() => RequestFor(new SubjectId("subject-1"));
+    private static GovernedRequest Request() => GovernedRequest.Create(new SubjectId("subject-1"), new DomainId("domain-1"), "review", ResourceScope.For("case-a"));
     private static GovernedRequest RequestFor(SubjectId subject) => GovernedRequest.Create(subject, new DomainId("domain-1"), "review", ResourceScope.For("case-a"));
     private static AuthorizationRequest AuthRequest() => new(new SubjectId("subject-1"), new DomainId("domain-1"), "review", ResourceScope.For("case-a"));
     private static PolicyRule Policy(bool available = true, PolicyEffect effect = PolicyEffect.Allow) => new("policy", new DomainId("domain-1"), "review", ResourceScope.For("case-a"), effect, available);
-    private static AuthorityRecord Authority(SubjectId? holder = null, DomainId? domain = null, string purpose = "review", ResourceScope? scope = null, DateTimeOffset? expiresAt = null, bool revoked = false, string? delegationId = null, bool mayDelegate = false) => new(Guid.NewGuid().ToString(), holder ?? new SubjectId("subject-1"), domain ?? new DomainId("domain-1"), purpose, scope ?? ResourceScope.For("case-a"), Now.AddHours(-1), expiresAt ?? Now.AddHours(1), revoked, delegationId, mayDelegate);
+    private static AuthorityRecord Authority(SubjectId? holder = null, DomainId? domain = null, string purpose = "review", ResourceScope? scope = null, DateTimeOffset? expiresAt = null, bool revoked = false, AuthorityRecord? delegator = null, bool mayDelegate = false, string? delegationId = null) => new(Guid.NewGuid().ToString(), holder ?? new SubjectId("subject-1"), domain ?? new DomainId("domain-1"), purpose, scope ?? ResourceScope.For("case-a"), Now.AddHours(-1), expiresAt ?? Now.AddHours(1), revoked, delegationId, mayDelegate);
     private static Delegation DelegationTo(AuthorityRecord source, AuthorityRecord recipientAuthority, string id, SubjectId? recipient = null, DomainId? domain = null, string? purpose = null, ResourceScope? scope = null, DateTimeOffset? expiresAt = null, bool revoked = false, bool allowsFurtherDelegation = false) => new(id, source.Holder, recipient ?? recipientAuthority.Holder, source.Id, domain ?? source.Domain, purpose ?? source.Purpose, scope ?? recipientAuthority.Scope, Now.AddHours(-1), expiresAt ?? Now.AddHours(1), revoked, allowsFurtherDelegation);
     private static ContextMaterial Material(string resource = "case-a", DomainId? domain = null, string purpose = "review") => new("summary", "content", resource, domain ?? new DomainId("domain-1"), purpose, Sensitivity.Confidential, "source-a", Uncertainty.Uncertain);
     private static GovernedRequestProcessor Processor(IdentityContext? identity = null, IEnumerable<PolicyRule>? policies = null, IEnumerable<AuthorityRecord>? authorities = null, IEnumerable<ContextMaterial>? material = null, IEnumerable<Delegation>? delegations = null) => new(new Resolver(identity ?? IdentityContext.Resolved(new SubjectId("subject-1"))), new EffectiveAuthorityEvaluator(policies ?? [Policy()], authorities ?? [Authority()], () => Now, delegations), new MinimumNecessaryContextAssembler(material ?? [Material()]));
