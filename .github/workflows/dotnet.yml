@@ -28,5 +28,4 @@ jobs:
         run: dotnet build Aria.sln --configuration Release --no-restore
 
       - name: Test
-        run: dotnet clean Aria.sln --configuration Release
-             dotnet test Aria.sln --configuration Release --verbosity normal
+        run: dotnet test Aria.sln --configuration Release --no-build --verbosity normal
