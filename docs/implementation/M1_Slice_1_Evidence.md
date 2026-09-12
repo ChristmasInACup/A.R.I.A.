@@ -8,11 +8,13 @@
 
 `EffectiveAuthorityEvaluator` fails closed for missing, denying, unavailable, expired, revoked, out-of-scope, or invalidly delegated authority. `MinimumNecessaryContextAssembler` selects material only when its domain, purpose, and resource match the authorized request, retaining sensitivity, provenance, and uncertainty. `GovernedProposal` is a draft recommendation with explicit scope and uncertainty.
 
+Delegation validation requires every ancestor in a delegation chain to remain active, explicitly delegable, within the required domain and purpose, and within the resource scope of the authority it delegates to. The chain is also cycle-bounded through visited authority identifiers.
+
 ## Executable evidence
 
-`tests/Aria.Tests/FirstSliceTests.cs` covers the permitted end-to-end path and denied paths for identity state, policy availability/denial, lifecycle, delegation, purpose/domain/scope mismatch, authorization ordering, context minimization, provenance/sensitivity/uncertainty retention, proposal non-authority, and changed authorization conditions.
+`tests/Aria.Tests/FirstSliceTests.cs` covers the permitted end-to-end path and denied paths for identity state, policy availability/denial, lifecycle, delegation, multi-level ancestor domain/purpose boundaries, scope mismatch, authorization ordering, context minimization, provenance/sensitivity/uncertainty retention, proposal non-authority, and changed authorization conditions.
 
-On 2026-09-09, `dotnet test Aria.sln --configuration Release` passed **15/15** under the repository's native `net10.0` target. The test command restored, built, and executed the complete solution suite.
+The pre-change validation on 2026-09-09 passed **15/15** under the repository's native `net10.0` target. Two regression tests have now been added for multi-level delegation ancestor domain and purpose boundaries. The complete suite must be rerun after these changes before M1 acceptance or merge.
 
 ## Non-goals and limitations
 
