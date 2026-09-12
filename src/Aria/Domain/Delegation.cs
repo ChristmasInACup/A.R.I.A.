@@ -13,11 +13,11 @@ public sealed record Delegation(
     DateTimeOffset ExpiresAt,
     bool IsRevoked,
     bool AllowsFurtherDelegation,
-    string Provenance,
-    IReadOnlyList<string> Conditions)
+    string Provenance = "unspecified",
+    IReadOnlyList<string>? Conditions = null)
 {
     public bool IsActiveAt(DateTimeOffset now)
         => !IsRevoked && EffectiveFrom <= now && now < ExpiresAt;
 
-    public bool HasUnsupportedConditions => Conditions.Count > 0;
+    public bool HasUnsupportedConditions => Conditions is { Count: > 0 };
 }
