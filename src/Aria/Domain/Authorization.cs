@@ -75,6 +75,8 @@ public sealed class EffectiveAuthorityEvaluator : IAuthorizationEvaluator
         if (policies.Any(rule => !rule.IsAvailable)) return AuthorizationDecision.Unresolved(request, "Applicable policy is unavailable.");
         if (policies.Length == 0 || !policies.Any(rule => rule.Effect == PolicyEffect.Allow)) return AuthorizationDecision.Deny(request, "No applicable allowing policy exists.");
         if (policies.Any(rule => rule.Effect == PolicyEffect.Deny)) return AuthorizationDecision.Deny(request, "An applicable policy denies the request.");
+        if (_authorities.GroupBy(candidate => candidate.Id, StringComparer.Ordinal).Any(group => group.Count() > 1)) return AuthorizationDecision.Deny(request, "Authority state is ambiguous.");
+        if (_delegations.GroupBy(candidate => candidate.Id, StringComparer.Ordinal).Any(group => group.Count() > 1)) return AuthorizationDecision.Deny(request, "Delegation state is ambiguous.");
 
         var now = _clock();
         var authority = _authorities.FirstOrDefault(candidate =>
@@ -107,22 +109,24 @@ public sealed class EffectiveAuthorityEvaluator : IAuthorizationEvaluator
         if (authority.DelegationId is null)
             return true;
 
-        var delegationMatches = _delegations.Where(candidate => candidate.Id == authority.DelegationId).ToArray();
-        if (delegationMatches.Length != 1 || !visitedDelegations.Add(authority.DelegationId))
+        var delegation = _delegations.FirstOrDefault(candidate => candidate.Id == authority.DelegationId);
+        if (delegation is null || !visitedDelegations.Add(delegation.Id))
             return false;
 
-        var delegation = delegationMatches[0];
         if (!delegation.IsActiveAt(now)
             || delegation.Recipient != authority.Holder
             || delegation.Domain != requiredDomain
             || delegation.Purpose != requiredPurpose
             || !delegation.Scope.Contains(requiredScope)
-            || delegation.Scope != authority.Scope)
+            || !delegation.Scope.Contains(authority.Scope))
             return false;
 
-        var source = _authorities.SingleOrDefault(candidate => candidate.Id == delegation.SourceAuthorityId);
-        if (source is null
-            || source.Holder != delegation.Issuer
+        var sourceMatches = _authorities.Where(candidate => candidate.Id == delegation.SourceAuthorityId).ToArray();
+        if (sourceMatches.Length != 1)
+            return false;
+
+        var source = sourceMatches[0];
+        if (source.Holder != delegation.Issuer
             || !source.IsActiveAt(now)
             || !source.MayDelegate
             || source.Domain != delegation.Domain
