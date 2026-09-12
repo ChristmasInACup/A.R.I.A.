@@ -63,9 +63,29 @@ public sealed class EffectiveAuthorityEvaluator : IAuthorizationEvaluator
     {
         if (!visited.Add(authority.Id) || !authority.AppliesTo(request) || !authority.IsActiveAt(now)) return false;
         return authority.DelegatorAuthority is null ||
-            (authority.DelegatorAuthority.MayDelegate && authority.DelegatorAuthority.Domain == authority.Domain && authority.DelegatorAuthority.Purpose == authority.Purpose && authority.DelegatorAuthority.Scope.Contains(authority.Scope) && IsDelegatorEffective(authority.DelegatorAuthority, now, visited));
+            (authority.DelegatorAuthority.MayDelegate &&
+             authority.DelegatorAuthority.Domain == request.Domain &&
+             authority.DelegatorAuthority.Purpose == request.Purpose &&
+             authority.DelegatorAuthority.Scope.Contains(authority.Scope) &&
+             IsDelegatorEffective(authority.DelegatorAuthority, now, visited, request.Domain, request.Purpose, authority.Scope));
     }
 
-    private static bool IsDelegatorEffective(AuthorityRecord authority, DateTimeOffset now, ISet<string> visited) =>
-        visited.Add(authority.Id) && authority.IsActiveAt(now) && (authority.DelegatorAuthority is null || (authority.DelegatorAuthority.MayDelegate && authority.DelegatorAuthority.Scope.Contains(authority.Scope) && IsDelegatorEffective(authority.DelegatorAuthority, now, visited)));
+    private static bool IsDelegatorEffective(
+        AuthorityRecord authority,
+        DateTimeOffset now,
+        ISet<string> visited,
+        DomainId requiredDomain,
+        string requiredPurpose,
+        ResourceScope delegatedScope)
+    {
+        if (!visited.Add(authority.Id) ||
+            !authority.IsActiveAt(now) ||
+            !authority.MayDelegate ||
+            authority.Domain != requiredDomain ||
+            authority.Purpose != requiredPurpose ||
+            !authority.Scope.Contains(delegatedScope)) return false;
+
+        return authority.DelegatorAuthority is null ||
+            IsDelegatorEffective(authority.DelegatorAuthority, now, visited, requiredDomain, requiredPurpose, authority.Scope);
+    }
 }
