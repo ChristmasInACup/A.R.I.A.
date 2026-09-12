@@ -1,6 +1,6 @@
 # ADR-0002 — M1 Delegation Model
 
-**Status:** Proposed
+**Status:** Approved
 **Scope:** M1 governed request authorization
 **Authority:** ARIA-SPEC-AUTH-002 — Delegation & Authority
 
@@ -20,7 +20,7 @@ An authority record represents authority held by a subject. It contains the hold
 
 ### Delegation
 
-A delegation represents an explicit grant of bounded authority from an issuer to a recipient. For M1, a delegation must contain:
+A delegation represents an explicit grant of bounded authority from an issuer to a recipient. For M1, a delegation contains:
 
 - a stable delegation identifier;
 - issuer/authorizing subject;
@@ -32,9 +32,10 @@ A delegation represents an explicit grant of bounded authority from an issuer to
 - validity window;
 - revocation state;
 - explicit permission for further delegation;
-- provenance/attribution sufficient to establish who created the delegation.
+- provenance/attribution sufficient to establish who created the delegation;
+- a condition collection boundary.
 
-M1 may keep conditions minimal where no condition model is yet required, but the model must not silently discard the specification's condition boundary. Unsupported conditions must fail closed rather than being treated as satisfied.
+M1 does not implement condition evaluation. A delegation carrying unsupported conditions fails closed rather than treating those conditions as satisfied.
 
 ### Effective delegation
 
@@ -50,6 +51,7 @@ A delegated authority is effective only when all of the following hold at evalua
 8. Every ancestor delegation satisfies the same bounded constraints.
 9. No cycle or repeated authority/delegation identity is accepted.
 10. Any unverifiable or ambiguous delegation causes denial/unresolved behavior rather than authorization.
+11. Unsupported delegation conditions cause denial rather than authorization.
 
 ### Transitive delegation
 
@@ -63,12 +65,17 @@ M1 will not implement persistence, distributed concurrency control, emergency de
 
 M1 will nevertheless represent enough delegation state to prevent implicit recipient propagation and to evaluate the authorization boundary safely.
 
+### Provenance boundary
+
+M1 preserves a provenance field on the delegation record as part of the security-critical governance state. The field is retained for attribution and future audit integration; M1 does not yet implement persistent audit storage or provenance verification.
+
 ## Consequences
 
 - Authorization can prove recipient identity rather than trusting object topology.
 - Delegation becomes auditable as a distinct governance event.
+- Unsupported conditions cannot silently become authorization.
 - Future revocation, versioning, persistence, and delegation-history features have a natural domain boundary.
-- M1 requires explicit delegation fixtures and tests for recipient mismatch, transitive delegation, revocation/expiration, scope, domain, purpose, and cycles.
+- M1 requires explicit delegation fixtures and tests for recipient mismatch, transitive delegation, revocation/expiration, scope, domain, purpose, cycles, and unsupported conditions.
 - The implementation should prefer small domain types and focused evaluation methods over a larger authorization object.
 
 ## Rejected alternative
