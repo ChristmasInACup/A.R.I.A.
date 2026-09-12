@@ -37,8 +37,14 @@ public sealed record GovernedInformation(
     DateTimeOffset? ValidFrom = null,
     DateTimeOffset? ValidUntil = null)
 {
-    public ContextMaterial ToContextMaterial()
-        => new(Id, Value, Resource, Domain, Purpose, Sensitivity, Provenance, Uncertainty, Owner, Lifecycle, FreshUntil, ValidFrom, ValidUntil);
+    public ContextMaterial ToContextMaterial(DateTimeOffset now)
+    {
+        var effectiveLifecycle = Lifecycle;
+        if (effectiveLifecycle == InformationLifecycleState.Available && FreshUntil is { } freshUntil && now >= freshUntil)
+            effectiveLifecycle = InformationLifecycleState.Stale;
+
+        return new(Id, Value, Resource, Domain, Purpose, Sensitivity, Provenance, Uncertainty, Owner, effectiveLifecycle, FreshUntil, ValidFrom, ValidUntil);
+    }
 }
 
 public sealed record AuthorizedContext
@@ -58,19 +64,7 @@ public sealed record ContextAssemblyResult(bool IsAssembled, string Reason, Auth
 
 public interface IContextAssembler { ContextAssemblyResult Assemble(GovernedRequest request, AuthorizationGrant authorization); }
 
-public sealed class MinimumNecessaryContextAssembler : IContextAssembler
-{
-    private readonly IReadOnlyList<ContextMaterial> _availableMaterial;
-    public MinimumNecessaryContextAssembler(IEnumerable<ContextMaterial> availableMaterial) => _availableMaterial = availableMaterial?.ToArray() ?? throw new ArgumentNullException(nameof(availableMaterial));
-    public ContextAssemblyResult Assemble(GovernedRequest request, AuthorizationGrant authorization)
-    {
-        if (!authorization.AppliesTo(request)) return ContextAssemblyResult.Denied("Authorization does not apply to the requested context.");
-        var selected = _availableMaterial.Where(item => item.Domain == request.Domain && item.Purpose == request.Purpose && request.Scope.Contains(item.Resource)).ToArray();
-        return selected.Length == 0 ? ContextAssemblyResult.Denied("No authorized context material is available for the request.") : ContextAssemblyResult.Assembled(new AuthorizedContext(request, authorization, selected));
-    }
-}
-
-/// <summary>Assembles context only from information whose governance state permits use for the request.</summary>
+/// <summary>Assembles context exclusively from governed information after authorization succeeds.</summary>
 public sealed class GovernedKnowledgeContextAssembler : IContextAssembler
 {
     private readonly IReadOnlyList<GovernedInformation> _information;
@@ -96,7 +90,7 @@ public sealed class GovernedKnowledgeContextAssembler : IContextAssembler
 
         var selected = _information
             .Where(item => IsUsableForRequest(item, request, authorization, now))
-            .Select(item => item.ToContextMaterial())
+            .Select(item => item.ToContextMaterial(now))
             .ToArray();
 
         return selected.Length == 0
