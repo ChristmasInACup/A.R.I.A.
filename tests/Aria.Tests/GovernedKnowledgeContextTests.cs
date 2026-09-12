@@ -96,12 +96,32 @@ public sealed class GovernedKnowledgeContextTests
     }
 
     [Fact]
-    public void Stale_information_remains_explicit_when_assembled()
+    public void Explicit_stale_information_remains_stale_when_assembled()
     {
         var result = Assembler(Information(lifecycle: InformationLifecycleState.Stale)).Assemble(Request(), Grant());
 
         Assert.True(result.IsAssembled);
         Assert.Equal(InformationLifecycleState.Stale, Assert.Single(result.Context!.Material).Lifecycle);
+    }
+
+    [Fact]
+    public void Expired_freshness_is_explicitly_marked_stale_without_becoming_invalid()
+    {
+        var result = Assembler(Information(freshUntil: Now.AddMinutes(-1))).Assemble(Request(), Grant());
+
+        Assert.True(result.IsAssembled);
+        var material = Assert.Single(result.Context!.Material);
+        Assert.Equal(InformationLifecycleState.Stale, material.Lifecycle);
+        Assert.Equal(Now.AddMinutes(-1), material.FreshUntil);
+    }
+
+    [Fact]
+    public void Valid_freshness_remains_available()
+    {
+        var result = Assembler(Information(freshUntil: Now.AddMinutes(1))).Assemble(Request(), Grant());
+
+        Assert.True(result.IsAssembled);
+        Assert.Equal(InformationLifecycleState.Available, Assert.Single(result.Context!.Material).Lifecycle);
     }
 
     [Fact]
@@ -181,9 +201,10 @@ public sealed class GovernedKnowledgeContextTests
         string provenance = "source-a",
         Uncertainty uncertainty = Uncertainty.Uncertain,
         InformationLifecycleState lifecycle = InformationLifecycleState.Available,
+        DateTimeOffset? freshUntil = null,
         DateTimeOffset? validFrom = null,
         DateTimeOffset? validUntil = null)
-        => new($"information-{resource}", "summary", value, resource, Subject, domain ?? Domain, purpose, Sensitivity.Confidential, provenance, uncertainty, lifecycle, null, validFrom, validUntil);
+        => new($"information-{resource}", "summary", value, resource, Subject, domain ?? Domain, purpose, Sensitivity.Confidential, provenance, uncertainty, lifecycle, freshUntil, validFrom, validUntil);
 
     private static PolicyRule Policy() => new("policy", Domain, "review", ResourceScope.For("case-a"), PolicyEffect.Allow);
 }
