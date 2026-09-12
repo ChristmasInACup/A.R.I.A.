@@ -130,12 +130,15 @@ public sealed class GovernedKnowledgeContextTests
     public void Knowledge_does_not_create_authority()
     {
         var evaluator = new EffectiveAuthorityEvaluator([Policy()], [], () => Now);
-        var decisionWithoutKnowledge = evaluator.Evaluate(new AuthorizationRequest(Subject, Domain, "review", ResourceScope.For("case-a")));
-        var context = Assembler(Information()).Assemble(Request(), new AuthorizationGrantForTest().Create());
+        var request = new AuthorizationRequest(Subject, Domain, "review", ResourceScope.For("case-a"));
+
+        var decisionWithoutKnowledge = evaluator.Evaluate(request);
+        var context = Assembler(Information()).Assemble(Request(), Grant());
+        var decisionWithKnowledge = evaluator.Evaluate(request);
 
         Assert.False(decisionWithoutKnowledge.IsAuthorized);
         Assert.True(context.IsAssembled);
-        Assert.False(evaluator.Evaluate(new AuthorizationRequest(Subject, Domain, "review", ResourceScope.For("case-a"))).IsAuthorized);
+        Assert.False(decisionWithKnowledge.IsAuthorized);
     }
 
     [Fact]
@@ -163,7 +166,8 @@ public sealed class GovernedKnowledgeContextTests
     private static AuthorizationGrant Grant()
     {
         var request = new AuthorizationRequest(Subject, Domain, "review", ResourceScope.For("case-a"));
-        return new AuthorizationGrantForTest().Create(request);
+        var authority = new AuthorityRecord("authority", Subject, Domain, "review", ResourceScope.For("case-a"), Now.AddHours(-1), Now.AddHours(1), false);
+        return AuthorizationDecision.Allow(request, authority, "test").Grant!;
     }
 
     private static GovernedKnowledgeContextAssembler Assembler(params GovernedInformation[] information)
@@ -179,16 +183,7 @@ public sealed class GovernedKnowledgeContextTests
         InformationLifecycleState lifecycle = InformationLifecycleState.Available,
         DateTimeOffset? validFrom = null,
         DateTimeOffset? validUntil = null)
-        => new("information-1", "summary", value, resource, Subject, domain ?? Domain, purpose, Sensitivity.Confidential, provenance, uncertainty, lifecycle, null, validFrom, validUntil);
+        => new($"information-{resource}", "summary", value, resource, Subject, domain ?? Domain, purpose, Sensitivity.Confidential, provenance, uncertainty, lifecycle, null, validFrom, validUntil);
 
     private static PolicyRule Policy() => new("policy", Domain, "review", ResourceScope.For("case-a"), PolicyEffect.Allow);
-
-    private sealed class AuthorizationGrantForTest
-    {
-        public AuthorizationGrant Create(AuthorizationRequest request = null!)
-        {
-            request ??= new AuthorizationRequest(Subject, Domain, "review", ResourceScope.For("case-a"));
-            return AuthorizationDecision.Allow(request, new AuthorityRecord("authority", Subject, Domain, "review", ResourceScope.For("case-a"), Now.AddHours(-1), Now.AddHours(1), false), "test").Grant!;
-        }
-    }
 }
