@@ -10,7 +10,17 @@ public sealed record PolicyRule(string Id, DomainId Domain, string Purpose, Reso
 }
 
 /// <summary>Authority state: explicit, bounded, revocable, and optionally delegated.</summary>
-public sealed record AuthorityRecord(string Id, SubjectId Holder, DomainId Domain, string Purpose, ResourceScope Scope, DateTimeOffset EffectiveFrom, DateTimeOffset ExpiresAt, bool IsRevoked, AuthorityRecord? DelegatorAuthority = null, bool MayDelegate = false)
+public sealed record AuthorityRecord(
+    string Id,
+    SubjectId Holder,
+    DomainId Domain,
+    string Purpose,
+    ResourceScope Scope,
+    DateTimeOffset EffectiveFrom,
+    DateTimeOffset ExpiresAt,
+    bool IsRevoked,
+    string? DelegationId = null,
+    bool MayDelegate = false)
 {
     public bool AppliesTo(AuthorizationRequest request) => Holder == request.Subject && Domain == request.Domain && Purpose == request.Purpose && Scope.Contains(request.Scope);
     public bool IsActiveAt(DateTimeOffset now) => !IsRevoked && EffectiveFrom <= now && now < ExpiresAt;
@@ -44,9 +54,20 @@ public sealed class EffectiveAuthorityEvaluator : IAuthorizationEvaluator
 {
     private readonly IReadOnlyList<PolicyRule> _policies;
     private readonly IReadOnlyList<AuthorityRecord> _authorities;
+    private readonly IReadOnlyList<Delegation> _delegations;
     private readonly Func<DateTimeOffset> _clock;
-    public EffectiveAuthorityEvaluator(IEnumerable<PolicyRule> policies, IEnumerable<AuthorityRecord> authorities, Func<DateTimeOffset> clock)
-    { _policies = policies?.ToArray() ?? throw new ArgumentNullException(nameof(policies)); _authorities = authorities?.ToArray() ?? throw new ArgumentNullException(nameof(authorities)); _clock = clock ?? throw new ArgumentNullException(nameof(clock)); }
+
+    public EffectiveAuthorityEvaluator(
+        IEnumerable<PolicyRule> policies,
+        IEnumerable<AuthorityRecord> authorities,
+        Func<DateTimeOffset> clock,
+        IEnumerable<Delegation>? delegations = null)
+    {
+        _policies = policies?.ToArray() ?? throw new ArgumentNullException(nameof(policies));
+        _authorities = authorities?.ToArray() ?? throw new ArgumentNullException(nameof(authorities));
+        _delegations = delegations?.ToArray() ?? [];
+        _clock = clock ?? throw new ArgumentNullException(nameof(clock));
+    }
 
     public AuthorizationDecision Evaluate(AuthorizationRequest request)
     {
@@ -54,38 +75,71 @@ public sealed class EffectiveAuthorityEvaluator : IAuthorizationEvaluator
         if (policies.Any(rule => !rule.IsAvailable)) return AuthorizationDecision.Unresolved(request, "Applicable policy is unavailable.");
         if (policies.Length == 0 || !policies.Any(rule => rule.Effect == PolicyEffect.Allow)) return AuthorizationDecision.Deny(request, "No applicable allowing policy exists.");
         if (policies.Any(rule => rule.Effect == PolicyEffect.Deny)) return AuthorizationDecision.Deny(request, "An applicable policy denies the request.");
+
         var now = _clock();
-        var authority = _authorities.FirstOrDefault(candidate => IsEffective(candidate, request, now, new HashSet<string>(StringComparer.Ordinal)));
-        return authority is null ? AuthorizationDecision.Deny(request, "No effective authority applies to the request.") : AuthorizationDecision.Allow(request, authority, "Applicable policy and effective authority allow the request.");
+        var authority = _authorities.FirstOrDefault(candidate =>
+            IsEffective(candidate, request.Subject, request.Domain, request.Purpose, request.Scope, now,
+                new HashSet<string>(StringComparer.Ordinal), new HashSet<string>(StringComparer.Ordinal)));
+
+        return authority is null
+            ? AuthorizationDecision.Deny(request, "No effective authority applies to the request.")
+            : AuthorizationDecision.Allow(request, authority, "Applicable policy and effective authority allow the request.");
     }
 
-    private static bool IsEffective(AuthorityRecord authority, AuthorizationRequest request, DateTimeOffset now, ISet<string> visited)
-    {
-        if (!visited.Add(authority.Id) || !authority.AppliesTo(request) || !authority.IsActiveAt(now)) return false;
-        return authority.DelegatorAuthority is null ||
-            (authority.DelegatorAuthority.MayDelegate &&
-             authority.DelegatorAuthority.Domain == request.Domain &&
-             authority.DelegatorAuthority.Purpose == request.Purpose &&
-             authority.DelegatorAuthority.Scope.Contains(authority.Scope) &&
-             IsDelegatorEffective(authority.DelegatorAuthority, now, visited, request.Domain, request.Purpose, authority.Scope));
-    }
-
-    private static bool IsDelegatorEffective(
+    private bool IsEffective(
         AuthorityRecord authority,
-        DateTimeOffset now,
-        ISet<string> visited,
+        SubjectId requiredHolder,
         DomainId requiredDomain,
         string requiredPurpose,
-        ResourceScope delegatedScope)
+        ResourceScope requiredScope,
+        DateTimeOffset now,
+        ISet<string> visitedAuthorities,
+        ISet<string> visitedDelegations)
     {
-        if (!visited.Add(authority.Id) ||
-            !authority.IsActiveAt(now) ||
-            !authority.MayDelegate ||
-            authority.Domain != requiredDomain ||
-            authority.Purpose != requiredPurpose ||
-            !authority.Scope.Contains(delegatedScope)) return false;
+        if (!visitedAuthorities.Add(authority.Id)
+            || authority.Holder != requiredHolder
+            || authority.Domain != requiredDomain
+            || authority.Purpose != requiredPurpose
+            || !authority.Scope.Contains(requiredScope)
+            || !authority.IsActiveAt(now))
+            return false;
 
-        return authority.DelegatorAuthority is null ||
-            IsDelegatorEffective(authority.DelegatorAuthority, now, visited, requiredDomain, requiredPurpose, authority.Scope);
+        if (authority.DelegationId is null)
+            return true;
+
+        var delegationMatches = _delegations.Where(candidate => candidate.Id == authority.DelegationId).ToArray();
+        if (delegationMatches.Length != 1 || !visitedDelegations.Add(authority.DelegationId))
+            return false;
+
+        var delegation = delegationMatches[0];
+        if (!delegation.IsActiveAt(now)
+            || delegation.Recipient != authority.Holder
+            || delegation.Domain != requiredDomain
+            || delegation.Purpose != requiredPurpose
+            || !delegation.Scope.Contains(requiredScope)
+            || delegation.Scope != authority.Scope)
+            return false;
+
+        var source = _authorities.SingleOrDefault(candidate => candidate.Id == delegation.SourceAuthorityId);
+        if (source is null
+            || source.Holder != delegation.Issuer
+            || !source.IsActiveAt(now)
+            || !source.MayDelegate
+            || source.Domain != delegation.Domain
+            || source.Purpose != delegation.Purpose
+            || !source.Scope.Contains(delegation.Scope))
+            return false;
+
+        if (source.DelegationId is not null && !SourceDelegationAllowsFurtherDelegation(source, now))
+            return false;
+
+        return IsEffective(source, delegation.Issuer, delegation.Domain, delegation.Purpose, delegation.Scope,
+            now, visitedAuthorities, visitedDelegations);
+    }
+
+    private bool SourceDelegationAllowsFurtherDelegation(AuthorityRecord source, DateTimeOffset now)
+    {
+        var matches = _delegations.Where(candidate => candidate.Id == source.DelegationId).ToArray();
+        return matches.Length == 1 && matches[0].IsActiveAt(now) && matches[0].AllowsFurtherDelegation;
     }
 }
