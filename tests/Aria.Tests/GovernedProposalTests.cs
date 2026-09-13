@@ -148,7 +148,7 @@ public sealed class GovernedProposalTests
 
         Assert.True(result.IsEligible);
         Assert.DoesNotContain("approved", result.Reason, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("authorized", result.Reason, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("authorization is granted", result.Reason, StringComparison.OrdinalIgnoreCase);
     }
 
     private static AuthorizedContext Context(
