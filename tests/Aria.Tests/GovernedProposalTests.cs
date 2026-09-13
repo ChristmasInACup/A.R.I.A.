@@ -156,7 +156,7 @@ public sealed class GovernedProposalTests
         Uncertainty uncertainty = Uncertainty.Known,
         InformationLifecycleState lifecycle = InformationLifecycleState.Available,
         DateTimeOffset? expiresAt = null)
-        => Context(new GovernedInformation("info-a", "summary", "governed content", "case-a", Subject, Domain, "review", Sensitivity.Confidential, "source-a", uncertainty, lifecycle), scope, expiresAt);
+        => Context([new GovernedInformation("info-a", "summary", "governed content", "case-a", Subject, Domain, "review", Sensitivity.Confidential, "source-a", uncertainty, lifecycle)], scope ?? ResourceScope.For("case-a"), expiresAt);
 
     private static AuthorizedContext Context(params GovernedInformation[] information)
         => Context(information, ResourceScope.For("case-a"), null);
