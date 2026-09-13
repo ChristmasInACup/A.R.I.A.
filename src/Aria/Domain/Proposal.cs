@@ -61,6 +61,10 @@ public sealed record GovernedProposal
     public string Purpose { get; }
     public ResourceScope Scope { get; }
     public string Recommendation { get; }
+
+    /// <summary>Compatibility projection for the existing M1 proposal contract. It never grants authority.</summary>
+    public string Intent => Recommendation;
+
     public string IntendedEffect { get; }
     public IReadOnlyList<string> Conditions { get; }
     public string Origin { get; }
