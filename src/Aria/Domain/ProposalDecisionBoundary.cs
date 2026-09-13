@@ -58,6 +58,6 @@ public sealed class GovernedProposalDecisionBoundary : IProposalDecisionBoundary
             .Any(group => group.Select(item => item.Value).Distinct(StringComparer.Ordinal).Count() > 1))
             return ProposalBoundaryResult.Unresolved("Proposal contains conflicting material evidence.");
 
-        return ProposalBoundaryResult.Eligible("Proposal is bounded by authorized context and eligible for downstream governance evaluation; no approval or authorization is granted.");
+        return ProposalBoundaryResult.Eligible("Proposal is bounded by authorized context and eligible only for downstream governance evaluation; eligibility is not approval, authorization, autonomy, or execution.");
     }
 }
