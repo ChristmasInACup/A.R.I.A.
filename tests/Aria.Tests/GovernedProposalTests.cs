@@ -114,16 +114,23 @@ public sealed class GovernedProposalTests
     }
 
     [Fact]
-    public void Conflicting_material_remains_unresolved()
+    public void Conflicting_material_fails_closed_before_proposal_boundary()
     {
-        var context = Context(
-            new GovernedInformation("info-a", "same-key", "value-a", "case-a", Subject, Domain, "review", Sensitivity.Confidential, "source-a", Uncertainty.Known),
-            new GovernedInformation("info-b", "same-key", "value-b", "case-a", Subject, Domain, "review", Sensitivity.Confidential, "source-b", Uncertainty.Known));
-        var proposal = GovernedProposal.Create(context, "review", "review", [], "test");
+        var contextResult = new GovernedKnowledgeContextAssembler(
+            [
+                new GovernedInformation("info-a", "same-key", "value-a", "case-a", Subject, Domain, "review", Sensitivity.Confidential, "source-a", Uncertainty.Known),
+                new GovernedInformation("info-b", "same-key", "value-b", "case-a", Subject, Domain, "review", Sensitivity.Confidential, "source-b", Uncertainty.Known)
+            ],
+            () => Now)
+            .Assemble(
+                GovernedRequest.Create(Subject, Domain, "review", ResourceScope.For("case-a")),
+                AuthorizationDecision.Allow(
+                    new AuthorizationRequest(Subject, Domain, "review", ResourceScope.For("case-a")),
+                    new AuthorityRecord("authority", Subject, Domain, "review", ResourceScope.For("case-a"), Now.AddHours(-1), Now.AddHours(1), false),
+                    "test authorization").Grant!);
 
-        var result = new GovernedProposalDecisionBoundary(() => Now).Evaluate(proposal);
-
-        Assert.Equal(ProposalBoundaryOutcome.Unresolved, result.Outcome);
+        Assert.False(contextResult.IsAssembled);
+        Assert.Null(contextResult.Context);
     }
 
     [Fact]
