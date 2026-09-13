@@ -1,7 +1,6 @@
 namespace Aria.Domain;
 
 public enum ProposalLifecycleState { Draft, Superseded, Expired, Rejected, Unresolved }
-public enum ProposalBoundaryOutcome { Eligible, Rejected, Unresolved }
 
 /// <summary>Traceable evidence used to form a proposal without becoming an authority source.</summary>
 public sealed record ProposalEvidence(
@@ -13,7 +12,7 @@ public sealed record ProposalEvidence(
     Uncertainty Uncertainty,
     InformationLifecycleState Lifecycle);
 
-/// <summary>A non-authoritative recommendation derived only from authorized context.</summary>
+/// <summary>A non-authoritative recommendation derived from authorized context.</summary>
 public sealed record GovernedProposal
 {
     private GovernedProposal(
@@ -31,14 +30,13 @@ public sealed record GovernedProposal
         Id = id;
         Revision = revision;
         Context = context;
-        RequestId = context.Request.GetHashCode();
+        RequestFingerprint = BuildRequestFingerprint(context.Request);
         AuthorizationReason = context.Grant.Reason;
         Subject = context.Request.Subject;
         Domain = proposedDomain;
         Purpose = proposedPurpose;
         Scope = proposedScope;
         Recommendation = recommendation;
-        Intent = recommendation;
         IntendedEffect = intendedEffect;
         Conditions = conditions;
         Origin = origin;
@@ -57,13 +55,16 @@ public sealed record GovernedProposal
 
     public Guid Id { get; }
     public int Revision { get; }
-    public int RequestId { get; }
+    public string RequestFingerprint { get; }
     public SubjectId Subject { get; }
     public DomainId Domain { get; }
     public string Purpose { get; }
     public ResourceScope Scope { get; }
     public string Recommendation { get; }
-    public string Intent { get; }
+
+    /// <summary>Compatibility projection for the existing M1 proposal contract. It never grants authority.</summary>
+    public string Intent => Recommendation;
+
     public string IntendedEffect { get; }
     public IReadOnlyList<string> Conditions { get; }
     public string Origin { get; }
@@ -83,9 +84,22 @@ public sealed record GovernedProposal
         string intendedEffect,
         IEnumerable<string> conditions,
         string origin)
+        => Create(context, recommendation, context.Request.Domain, context.Request.Purpose, context.Request.Scope, intendedEffect, conditions, origin);
+
+    public static GovernedProposal Create(
+        AuthorizedContext context,
+        string recommendation,
+        DomainId proposedDomain,
+        string proposedPurpose,
+        ResourceScope proposedScope,
+        string intendedEffect,
+        IEnumerable<string> conditions,
+        string origin)
     {
         ArgumentNullException.ThrowIfNull(context);
         ArgumentException.ThrowIfNullOrWhiteSpace(recommendation);
+        ArgumentException.ThrowIfNullOrWhiteSpace(proposedPurpose);
+        ArgumentNullException.ThrowIfNull(proposedScope);
         ArgumentException.ThrowIfNullOrWhiteSpace(intendedEffect);
         ArgumentException.ThrowIfNullOrWhiteSpace(origin);
         ArgumentNullException.ThrowIfNull(conditions);
@@ -101,25 +115,34 @@ public sealed record GovernedProposal
             1,
             context,
             recommendation,
-            context.Request.Domain,
-            context.Request.Purpose,
-            context.Request.Scope,
+            proposedDomain,
+            proposedPurpose,
+            proposedScope,
             intendedEffect,
             normalizedConditions,
             origin);
     }
 
-    /// <summary>
-    /// Creates a material revision while preserving the same proposal lineage.
-    /// Revision creation never creates or changes authority.
-    /// </summary>
+    /// <summary>Creates a material revision while preserving proposal lineage.</summary>
     public GovernedProposal Revise(
         string recommendation,
         string intendedEffect,
         IEnumerable<string> conditions,
         string origin)
+        => Revise(recommendation, Domain, Purpose, Scope, intendedEffect, conditions, origin);
+
+    public GovernedProposal Revise(
+        string recommendation,
+        DomainId proposedDomain,
+        string proposedPurpose,
+        ResourceScope proposedScope,
+        string intendedEffect,
+        IEnumerable<string> conditions,
+        string origin)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(recommendation);
+        ArgumentException.ThrowIfNullOrWhiteSpace(proposedPurpose);
+        ArgumentNullException.ThrowIfNull(proposedScope);
         ArgumentException.ThrowIfNullOrWhiteSpace(intendedEffect);
         ArgumentException.ThrowIfNullOrWhiteSpace(origin);
         ArgumentNullException.ThrowIfNull(conditions);
@@ -135,9 +158,9 @@ public sealed record GovernedProposal
             checked(Revision + 1),
             Context,
             recommendation,
-            Domain,
-            Purpose,
-            Scope,
+            proposedDomain,
+            proposedPurpose,
+            proposedScope,
             intendedEffect,
             normalizedConditions,
             origin);
@@ -161,54 +184,12 @@ public sealed record GovernedProposal
             || !string.Equals(Purpose, other.Purpose, StringComparison.Ordinal)
             || !Scope.Resources.SetEquals(other.Scope.Resources);
     }
-}
 
-/// <summary>
-/// Evaluates whether a proposal is structurally eligible for downstream governance.
-/// Eligibility is not approval, authorization, autonomy, or execution.
-/// </summary>
-public sealed record ProposalBoundaryResult(ProposalBoundaryOutcome Outcome, string Reason)
-{
-    public bool IsEligible => Outcome == ProposalBoundaryOutcome.Eligible;
-
-    public static ProposalBoundaryResult Eligible(string reason) => new(ProposalBoundaryOutcome.Eligible, reason);
-    public static ProposalBoundaryResult Rejected(string reason) => new(ProposalBoundaryOutcome.Rejected, reason);
-    public static ProposalBoundaryResult Unresolved(string reason) => new(ProposalBoundaryOutcome.Unresolved, reason);
-}
-
-public interface IProposalDecisionBoundary
-{
-    ProposalBoundaryResult Evaluate(GovernedProposal proposal);
-}
-
-public sealed class GovernedProposalDecisionBoundary : IProposalDecisionBoundary
-{
-    public ProposalBoundaryResult Evaluate(GovernedProposal proposal)
-    {
-        ArgumentNullException.ThrowIfNull(proposal);
-
-        if (!proposal.IsContainedByAuthorizedContext())
-            return ProposalBoundaryResult.Rejected("Proposal exceeds or conflicts with its authorized context.");
-
-        if (proposal.Context.Grant is null)
-            return ProposalBoundaryResult.Unresolved("Proposal has no authorization basis.");
-
-        if (proposal.Lifecycle != ProposalLifecycleState.Draft)
-            return ProposalBoundaryResult.Rejected("Only a current draft proposal may enter the decision boundary.");
-
-        if (proposal.Evidence.Count == 0)
-            return ProposalBoundaryResult.Unresolved("Proposal has no governing evidence.");
-
-        if (proposal.Evidence.Any(item => string.IsNullOrWhiteSpace(item.Provenance)))
-            return ProposalBoundaryResult.Unresolved("Proposal evidence is missing provenance.");
-
-        if (proposal.Evidence.Any(item => item.Lifecycle is InformationLifecycleState.Invalidated or InformationLifecycleState.Unknown))
-            return ProposalBoundaryResult.Unresolved("Proposal contains invalid or unknown lifecycle information.");
-
-        if (proposal.Uncertainty == Uncertainty.Unknown
-            || proposal.Evidence.Any(item => item.Uncertainty == Uncertainty.Unknown))
-            return ProposalBoundaryResult.Unresolved("Proposal contains unknown information.");
-
-        return ProposalBoundaryResult.Eligible("Proposal is bounded by authorized context and eligible for downstream governance evaluation; no approval or authorization is granted.");
-    }
+    private static string BuildRequestFingerprint(GovernedRequest request)
+        => string.Join(
+            "|",
+            request.Subject.Value,
+            request.Domain.Value,
+            request.Purpose,
+            string.Join(",", request.Scope.Resources.Order(StringComparer.Ordinal)));
 }
