@@ -114,23 +114,17 @@ public sealed class GovernedProposalTests
     }
 
     [Fact]
-    public void Conflicting_material_fails_closed_before_proposal_boundary()
+    public void Conflicting_material_is_unresolved_at_proposal_boundary()
     {
-        var contextResult = new GovernedKnowledgeContextAssembler(
-            [
-                new GovernedInformation("info-a", "same-key", "value-a", "case-a", Subject, Domain, "review", Sensitivity.Confidential, "source-a", Uncertainty.Known),
-                new GovernedInformation("info-b", "same-key", "value-b", "case-a", Subject, Domain, "review", Sensitivity.Confidential, "source-b", Uncertainty.Known)
-            ],
-            () => Now)
-            .Assemble(
-                GovernedRequest.Create(Subject, Domain, "review", ResourceScope.For("case-a")),
-                AuthorizationDecision.Allow(
-                    new AuthorizationRequest(Subject, Domain, "review", ResourceScope.For("case-a")),
-                    new AuthorityRecord("authority", Subject, Domain, "review", ResourceScope.For("case-a"), Now.AddHours(-1), Now.AddHours(1), false),
-                    "test authorization").Grant!);
+        var context = Context(
+            new GovernedInformation("info-a", "same-key", "value-a", "case-a", Subject, Domain, "review", Sensitivity.Confidential, "source-a", Uncertainty.Known),
+            new GovernedInformation("info-b", "same-key", "value-b", "case-a", Subject, Domain, "review", Sensitivity.Confidential, "source-b", Uncertainty.Known));
+        var proposal = GovernedProposal.Create(context, "review", "review", [], "test");
 
-        Assert.False(contextResult.IsAssembled);
-        Assert.Null(contextResult.Context);
+        var result = new GovernedProposalDecisionBoundary(() => Now).Evaluate(proposal);
+
+        Assert.Equal(ProposalBoundaryOutcome.Unresolved, result.Outcome);
+        Assert.Contains("conflicting", result.Reason, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -142,7 +136,8 @@ public sealed class GovernedProposalTests
         var result = new GovernedProposalDecisionBoundary(() => Now).Evaluate(proposal);
 
         Assert.Equal(ProposalBoundaryOutcome.Eligible, result.Outcome);
-        Assert.Contains("no approval or authorization is granted", result.Reason, StringComparison.Ordinal);
+        Assert.Contains("not approval", result.Reason, StringComparison.Ordinal);
+        Assert.Contains("not authorization", result.Reason, StringComparison.Ordinal);
         Assert.Equal(malicious, proposal.Recommendation);
     }
 
@@ -154,8 +149,8 @@ public sealed class GovernedProposalTests
         var result = new GovernedProposalDecisionBoundary(() => Now).Evaluate(proposal);
 
         Assert.True(result.IsEligible);
-        Assert.DoesNotContain("approved", result.Reason, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("authorization is granted", result.Reason, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("not approval", result.Reason, StringComparison.Ordinal);
+        Assert.Contains("not authorization", result.Reason, StringComparison.Ordinal);
     }
 
     private static AuthorizedContext Context(
