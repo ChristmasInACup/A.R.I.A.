@@ -27,5 +27,22 @@ jobs:
       - name: Build
         run: dotnet build Aria.sln --configuration Release --no-restore
 
+      - name: Inspect build artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "=== Checked-out source ==="
+          grep -n -F "eligibility is not approval" src/Aria/Domain/ProposalDecisionBoundary.cs
+          echo "=== Assembly hashes ==="
+          sha256sum src/Aria/bin/Release/net10.0/Aria.dll tests/Aria.Tests/bin/Release/net10.0/Aria.dll
+          echo "=== Expected string in src assembly ==="
+          strings -el src/Aria/bin/Release/net10.0/Aria.dll | grep -F "eligibility is not approval" || true
+          echo "=== Legacy string in src assembly ==="
+          strings -el src/Aria/bin/Release/net10.0/Aria.dll | grep -F "Proposal is bounded by authorized context" || true
+          echo "=== Expected string in test output assembly ==="
+          strings -el tests/Aria.Tests/bin/Release/net10.0/Aria.dll | grep -F "eligibility is not approval" || true
+          echo "=== Legacy string in test output assembly ==="
+          strings -el tests/Aria.Tests/bin/Release/net10.0/Aria.dll | grep -F "Proposal is bounded by authorized context" || true
+
       - name: Test
         run: dotnet test Aria.sln --configuration Release --no-build --verbosity normal
