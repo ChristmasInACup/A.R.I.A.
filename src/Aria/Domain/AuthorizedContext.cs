@@ -43,7 +43,7 @@ public sealed record GovernedInformation(
         if (effectiveLifecycle == InformationLifecycleState.Available && FreshUntil is { } freshUntil && now >= freshUntil)
             effectiveLifecycle = InformationLifecycleState.Stale;
 
-        return new(Id, Value, Resource, Domain, Purpose, Sensitivity, Provenance, Uncertainty, Owner, effectiveLifecycle, FreshUntil, ValidFrom, ValidUntil);
+        return new(Key, Value, Resource, Domain, Purpose, Sensitivity, Provenance, Uncertainty, Owner, effectiveLifecycle, FreshUntil, ValidFrom, ValidUntil);
     }
 }
 
