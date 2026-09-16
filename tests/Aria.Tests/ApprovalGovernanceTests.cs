@@ -90,27 +90,33 @@ public sealed class ApprovalGovernanceTests
     }
 
     [Fact]
-    public void Approval_for_different_scope_cannot_be_replayed()
+    public void Proposal_revision_cannot_change_scope_beyond_authorized_context()
     {
         var proposal = Proposal();
-        var approval = ApprovalEvidence.Approved(proposal, Approver, Now.AddMinutes(-5), Now.AddMinutes(5));
-        var changed = proposal.Revise("review", Domain, "review", ResourceScope.For("case-a", "case-b"), "review", [], "test");
 
-        var result = Validator(changed.Context.Grant.Authority).Validate(changed, Subject, GovernanceState.HumanApprovalRequired(), approval);
-
-        Assert.True(result.IsBlocked);
+        Assert.Throws<InvalidOperationException>(() =>
+            proposal.Revise("review", Domain, "review", ResourceScope.For("case-a", "case-b"), "review", [], "test"));
     }
 
     [Fact]
-    public void Approval_for_different_purpose_cannot_be_replayed()
+    public void Proposal_revision_cannot_change_authorized_purpose()
     {
         var proposal = Proposal();
-        var approval = ApprovalEvidence.Approved(proposal, Approver, Now.AddMinutes(-5), Now.AddMinutes(5));
-        var changed = proposal.Revise("review", Domain, "export", Scope, "review", [], "test");
 
-        var result = Validator(changed.Context.Grant.Authority).Validate(changed, Subject, GovernanceState.HumanApprovalRequired(), approval);
+        Assert.Throws<InvalidOperationException>(() =>
+            proposal.Revise("review", Domain, "export", Scope, "review", [], "test"));
+    }
+
+    [Fact]
+    public void Validator_rejects_a_proposal_outside_its_authorized_context()
+    {
+        var proposal = GovernedProposal.Create(Context(), "review", Domain, "review", ResourceScope.For("case-a", "case-b"), "review", [], "test");
+        var approval = ApprovalEvidence.Approved(proposal, Approver, Now.AddMinutes(-5), Now.AddMinutes(5));
+
+        var result = Validator(proposal.Context.Grant.Authority).Validate(proposal, Subject, GovernanceState.HumanApprovalRequired(), approval);
 
         Assert.True(result.IsBlocked);
+        Assert.Contains("authorized context", result.Reason, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
