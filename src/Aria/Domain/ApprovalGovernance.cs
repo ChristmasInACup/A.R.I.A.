@@ -109,7 +109,7 @@ public sealed record ApprovalEvidence
             proposal.Recommendation,
             proposal.IntendedEffect,
             proposal.Conditions.ToArray(),
-            MaterialInputFingerprint(proposal),
+            ComputeMaterialInputFingerprint(proposal),
             proposal.Context.Grant.Authority.Id,
             validFrom,
             expiresAt);
@@ -130,7 +130,7 @@ public sealed record ApprovalEvidence
             proposal.Recommendation,
             proposal.IntendedEffect,
             proposal.Conditions.ToArray(),
-            MaterialInputFingerprint(proposal),
+            ComputeMaterialInputFingerprint(proposal),
             proposal.Context.Grant.Authority.Id,
             DateTimeOffset.MinValue,
             DateTimeOffset.MaxValue);
@@ -155,11 +155,11 @@ public sealed record ApprovalEvidence
             && string.Equals(Recommendation, proposal.Recommendation, StringComparison.Ordinal)
             && string.Equals(IntendedEffect, proposal.IntendedEffect, StringComparison.Ordinal)
             && Conditions.SequenceEqual(proposal.Conditions, StringComparer.Ordinal)
-            && string.Equals(MaterialInputFingerprint, MaterialInputFingerprint(proposal), StringComparison.Ordinal)
+            && string.Equals(MaterialInputFingerprint, ComputeMaterialInputFingerprint(proposal), StringComparison.Ordinal)
             && string.Equals(AuthorityId, currentAuthorityId, StringComparison.Ordinal);
     }
 
-    private static string MaterialInputFingerprint(GovernedProposal proposal)
+    private static string ComputeMaterialInputFingerprint(GovernedProposal proposal)
         => string.Join(
             "|",
             proposal.Material
