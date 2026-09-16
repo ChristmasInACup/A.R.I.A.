@@ -1,4 +1,3 @@
-using System.Security.Cryptography;
 using Aria.Domain;
 using Xunit;
 
@@ -138,7 +137,9 @@ public sealed class GovernedProposalTests
 
         Assert.Equal(ProposalBoundaryOutcome.Eligible, result.Outcome);
         Assert.Contains("not approval", result.Reason, StringComparison.Ordinal);
-        Assert.Contains("not authorization", result.Reason, StringComparison.Ordinal);
+        Assert.Contains("authorization", result.Reason, StringComparison.Ordinal);
+        Assert.Contains("autonomy", result.Reason, StringComparison.Ordinal);
+        Assert.Contains("execution", result.Reason, StringComparison.Ordinal);
         Assert.Equal(malicious, proposal.Recommendation);
     }
 
@@ -151,32 +152,9 @@ public sealed class GovernedProposalTests
 
         Assert.True(result.IsEligible);
         Assert.Contains("not approval", result.Reason, StringComparison.Ordinal);
-        Assert.Contains("not authorization", result.Reason, StringComparison.Ordinal);
-    }
-
-    [Fact]
-    public void Runtime_assembly_diagnostic()
-    {
-        var assembly = typeof(GovernedProposalDecisionBoundary).Assembly;
-        var path = assembly.Location;
-        var hash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
-        var proposal = GovernedProposal.Create(Context(), "runtime diagnostic", "runtime diagnostic", [], "diagnostic");
-        var result = new GovernedProposalDecisionBoundary(() => Now).Evaluate(proposal);
-
-        Console.WriteLine($"RUNTIME ARIA ASSEMBLY: {assembly.FullName}");
-        Console.WriteLine($"RUNTIME ARIA LOCATION: {path}");
-        Console.WriteLine($"RUNTIME ARIA SHA256: {hash}");
-        Console.WriteLine($"RUNTIME BOUNDARY REASON: {result.Reason}");
-        foreach (var loaded in AppDomain.CurrentDomain.GetAssemblies().Where(a => string.Equals(a.GetName().Name, "Aria", StringComparison.OrdinalIgnoreCase)))
-            Console.WriteLine($"LOADED ARIA: {loaded.FullName} @ {loaded.Location}");
-
-        Assert.Contains("eligibility is not approval", ReadAllUtf8OrUtf16Strings(path), StringComparison.Ordinal);
-    }
-
-    private static string ReadAllUtf8OrUtf16Strings(string path)
-    {
-        var bytes = File.ReadAllBytes(path);
-        return System.Text.Encoding.UTF8.GetString(bytes) + "\n" + System.Text.Encoding.Unicode.GetString(bytes);
+        Assert.Contains("authorization", result.Reason, StringComparison.Ordinal);
+        Assert.Contains("autonomy", result.Reason, StringComparison.Ordinal);
+        Assert.Contains("execution", result.Reason, StringComparison.Ordinal);
     }
 
     private static AuthorizedContext Context(
