@@ -350,6 +350,9 @@ public sealed class ConsequentialGovernanceValidator : IConsequentialGovernanceV
         ArgumentNullException.ThrowIfNull(governance);
         ArgumentNullException.ThrowIfNull(governance.HumanControl);
 
+        if (!proposal.IsContainedByAuthorizedContext())
+            return FinalGovernanceResult.Blocked(proposal, "Proposal exceeds or conflicts with its authorized context.");
+
         var now = _clock();
         var request = new AuthorizationRequest(proposal.Subject, proposal.Domain, proposal.Purpose, proposal.Scope);
         var authorization = _authorizationEvaluator.Evaluate(request);
