@@ -147,6 +147,20 @@ public sealed record GovernedProposal
         ArgumentException.ThrowIfNullOrWhiteSpace(origin);
         ArgumentNullException.ThrowIfNull(conditions);
 
+        if (proposedDomain != Context.Request.Domain)
+            throw new InvalidOperationException("Proposal revision cannot change the authorized domain.");
+
+        if (!string.Equals(proposedPurpose, Context.Request.Purpose, StringComparison.Ordinal))
+            throw new InvalidOperationException("Proposal revision cannot change the authorized purpose.");
+
+        if (!Context.Request.Scope.Contains(proposedScope))
+            throw new InvalidOperationException("Proposal revision cannot broaden the authorized scope.");
+
+        if (Context.Grant.Request.Domain != proposedDomain
+            || !string.Equals(Context.Grant.Request.Purpose, proposedPurpose, StringComparison.Ordinal)
+            || !Context.Grant.Request.Scope.Contains(proposedScope))
+            throw new InvalidOperationException("Proposal revision cannot escape the authorization grant boundary.");
+
         var normalizedConditions = conditions
             .Select(value => value?.Trim())
             .Where(value => !string.IsNullOrWhiteSpace(value))
